@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CO₂ Sensor with Sensirion SCD30</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #ffffff;
+    }
+    h1, h2 {
+      color: #2c3e50;
+    }
+    table {
+      border-collapse: collapse;
+      width: 60%;
+      margin-top: 10px;
+      margin-left: auto; 
+      margin-right: auto;
+      table-layout: fixed; 
+    }
+    th, td {
+      border: 1px solid #888;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #a8a5a5;
+      color: white;
+    }
+    img {
+      margin-top: 10px;
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <h1><center>CO₂ Sensor Project Using Sensirion SCD30</center></h1>
+  <p style="text-align: center;"><i>Written by Dikshanya Ramaswamy, Nicholas Ricci and Ao Ruan</i></p>
+  <h2><strong>1. Introduction</strong></h2>
+  <p style="text-align: justify;">
+    This project focuses on the integration and testing of the Sensirion SCD30 sensor module for measuring carbon dioxide (CO₂) concentration, temperature, and humidity. The SCD30 is a digital sensor that communicates over the I²C protocol and is factory-calibrated for accurate measurements under controlled environmental conditions. It provides continuous and reliable data, making it well-suited for environmental monitoring applications where real-time readings are crucial.
+
+    The sensor delivers processed digital outputs to minimize on-device computation and offers flexibility for users to conduct their own post-processing and calibration adjustments as needed. Careful handling is required, particularly during the sensor's initial power-up period, during which readings may momentarily fluctuate before stabilizing. Preliminary lab testing (in a stable indoor environment) has shown CO₂ readings ranging from approximately 1000 ppm to over 3000 ppm under conditions of forced air exposure. Temperature and humidity measurements have remained consistent, typically around 25 °C and 45–50% relative humidity, respectively.
+    
+    At present, the sensor interfacing and data logging are combined within a unified system design. Future work will aim to modularize the codebase, separating the SCD30 interface into a standalone library for easier integration into broader data collection frameworks.
+  </p>
+
+  <h2><strong>2. Hardware Setup</strong></h2> 
+  <p>
+    The sensor communicates via I²C and requires 3.3V power. Below is the circuit diagram showing how the SCD30 is connected.
+  </p>
+  <center><img src="SCD30_pico.png" alt="Circuit Diagram for SCD30 setup"></center>
+
+  <h2><strong>3. Software Implementation</strong></h2>
+  For the software implementation the below table shows all the I2C commands required to communicate with the sensor. 
+  
+  <table border="1" style="border-collapse: collapse;">
+    <tr>
+      <th>Command / Action</th>
+      <th>Read/Write</th>
+      <th>Notes</th>
+    </tr>
+    <tr>
+      <td><code>SCAN</code></td>
+      <td>Read</td>
+      <td>Scan devices on the I2C bus</td>
+    </tr>
+    <tr>
+      <td><code>CONTINUOUS MEASUREMENT</code></td>
+      <td>Write</td>
+      <td>Start continuous CO₂ measurement</td>
+    </tr>
+    <tr>
+      <td><code>SET MEASUREMENT INTERVAL</code></td>
+      <td>Write</td>
+      <td>Set measurement interval (2s)</td>
+    </tr>
+    <tr>
+      <td><code>AUTOMATIC SELF CALIBRATION</code></td>
+      <td>Write</td>
+      <td>Enable automatic self-calibration</td>
+    </tr>
+    <tr>
+      <td><code>READY SIGNAL</code></td>
+      <td>Read</td>
+      <td>Check if data is ready (RDY pin high)</td>
+    </tr>
+    <tr>
+      <td><code>READ_MEASUREMENT</code></td>
+      <td>Write - Read</td>
+      <td>Tell sensor to prepare measurement data and reads it</td>
+    </tr>
+  </table>
+  
+  
+  <h3><li><strong>Python Code:</strong></h3> Fully working, reads CO₂, temperature, and humidity.</li>
+  <p>This project uses a MicroPython script running on the Raspberry Pi Pico to read data from the Sensirion SCD30 sensor over I²C. Below is a breakdown of the code logic and key commands used:</p>
+  
+  <pre><code>
+        # Import required modules
+        from machine import Pin, I2C     # Access GPIO pins and I2C
+        import struct                   # For binary data unpacking
+        
+        # Unpack 4 bytes into a float (big endian)
+        def unpack_scd30_float(b0, b1, b2, b3):
+            tmp = bytearray(4)
+            tmp[0], tmp[1], tmp[2], tmp[3] = b0, b1, b2, b3
+            return struct.unpack('>f', tmp)   # Returns a float from 4 bytes
+        
+        # Initialize I2C on GP12 (SDA) and GP13 (SCL) at 100 kHz
+        i2c = I2C(0, scl=Pin(13), sda=Pin(12), freq=100000)
+        i2c.scan()   # Scan for devices on the bus (for debugging)
+        
+        # RDY pin to check when data is ready
+        rdy = Pin(7, Pin.IN)
+        
+        # SCD30 I2C address (7-bit)
+        SCD30_ADR = 97
+        
+        # Command bytes (based on SCD30 datasheet)
+        COMMAND_CONTINUOUS_MEASUREMENT = b'\x00\x10\x00\x00\x00'
+        COMMAND_SET_MEASUREMENT_INTERVAL = b'\x46\x00\x00\x02\x00'  # Set 2s interval
+        COMMAND_AUTOMATIC_SELF_CALIBRATION = b'\x53\x06\x00\x01\x00'
+        COMMAND_READ_MEASUREMENT = b'\x03\x00'
+        
+        # Initialize sensor with above commands
+        i2c.writeto(SCD30_ADR, COMMAND_CONTINUOUS_MEASUREMENT)
+        i2c.writeto(SCD30_ADR, COMMAND_SET_MEASUREMENT_INTERVAL)
+        i2c.writeto(SCD30_ADR, COMMAND_AUTOMATIC_SELF_CALIBRATION)
+        
+        # Main data reading loop
+        while True:
+            if rdy.value() == 1:  # If RDY pin is high
+                i2c.writeto(SCD30_ADR, COMMAND_READ_MEASUREMENT)
+                buf = i2c.readfrom(SCD30_ADR, 18)  # Read 18 bytes of data
+                
+                # Extract float values from buffer
+                co2 = unpack_scd30_float(buf[0], buf[1], buf[3], buf[4])
+                temp = unpack_scd30_float(buf[6], buf[7], buf[9], buf[10])
+                humi = unpack_scd30_float(buf[12], buf[13], buf[15], buf[16])
+                
+                # Print values (you can format these further)
+                print("CO2:", co2[0], "ppm")
+                print("Temp:", temp[0], "°C")
+                print("Humidity:", humi[0], "%RH")
+        </code></pre>
+  
+    <p>
+    The above code is based on <a href="https://github.com/en0b/rPi-Pico-micropython-Simple-SCD30/blob/master/simple-scd30.py">Original github code</a><br>
+    You can find the full working script on GitHub: <a href="https://github.com/Dikshanya-Ram/Sensors" target="_blank">https://github.com/Dikshanya-Ram/Sensors</a>
+    </p>
+
+    <h3><li><strong>C Code:</strong></h3> *Partially working, still under debugging for data parsing.</li>
+    <p>
+      <section id="functions">  
+        <h4>Sensor Initialization and Configuration</h4>
+        <ul>
+          <li>SCD30_reset()</strong>: Sends a soft reset command to the SCD30 sensor via I2C.</li>
+          <li>SCD30_start_measurement(): Initiates continuous measurement mode with default ambient pressure.</li>
+          <li>SCD30_set_measurement_interval(): Configures the interval between measurements (e.g., every 2 seconds).</li>
+          <li>SCD30_set_auto_self_calibration(): Enables automatic self-calibration to improve long-term accuracy.</li>
+        </ul>
+      
+        <h4>Data Handling and Processing</h4>
+        <ul>
+          <li>SCD30_data_ready(): Checks if new measurement data is available using the data ready (RDY) pin.</li>
+          <li>unpack_scd30_float(b0, b1, b2, b3): Converts raw 4-byte data from the sensor into a floating-point number, accounting for system endianness.</li>
+          <li>SCD30_read_measurement(co2, temperature, humidity): Reads and decodes the CO₂, temperature, and humidity values from the sensor's output buffer.</li>
+        </ul>
+      
+        <h4>Main Function (main)</h4>
+        <ul>
+          <li>Initializes the I2C bus</li>
+          <li>Configures GPIOs</li>
+          <li>Continuously checks for new sensor data</li>
+          <li>If available, it reads and prints the CO₂, temperature, and humidity values every 2 seconds.</li>
+        </ul>
+      </section>
+       
+    <a href="https://github.com/Dikshanya-Ram/Sensors" target="_blank">https://github.com/Dikshanya-Ram/Sensors</a>
+    </p>
+  </ul>
+
+<h2><strong>4. Results</strong></h2>
+<table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Reading</th>
+        <th>CO₂ (ppm)</th>
+        <th>Temperature (°C)</th>
+        <th>Humidity (%)</th>
+    </tr>
+    <tr>
+      <td style="text-align: left;">1 (closed lab)</td>
+        <td>1056.30</td>
+        <td>25.00</td>
+        <td>47.53</td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">2 (closed lab)</td>
+        <td>1054.00</td>
+        <td>24.99</td>
+        <td>47.78</td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">3 (closed lab)</td>
+        <td>1044.93</td>
+        <td>24.99</td>
+        <td>46.58</td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">4 (when tested with blown air)</td>
+        <td>2534.34</td>
+        <td>25.20</td>
+        <td>50.10</td>
+    </tr>
+    <tr>
+      <td style="text-align: left;">5 (continuation)</td>
+        <td>3450.12</td>
+        <td>25.12</td>
+        <td>49.59</td>
+    </tr>
+</table>
+
+
+  <h2><strong>5. Conclusion/Future Work</strong></h2>
+  <p style="text-align: justify;">
+    The SCD30 provides accurate and reliable environmental data. With working Python code and progress on C implementation, this setup is a solid base for real-time air quality monitoring. We also would like to integrate all the electronic components and fabricate the PCB design shown in the image below. We would then have to provide the battery backed power integration to this system and the motor system developed. 
+    <center><img src="PCB.png" alt="PCB Design for the entire sysem"></center>
+  </p>
+
+  <p><strong>6. References</strong></p>
+    <ul>
+    <li><a href="SCD30_Sensor_Datasheet.pdf" target="_blank">Sensirion SCD30 Datasheet</a></li>
+    <li><a href="SCD3x_Interface_Description.pdf" target="_blank">Interface Description Sheet</a></li>
+    <li><a href="Pico_Datasheet.pdf" target="_blank">Raspberry Pi Pico DataSheet</a></li>
+    </ul>
+
+</body>
+</html>
