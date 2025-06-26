@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>index</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>Flux_Chamber</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <style type="text/css">
     pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -7482,7 +7482,9 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Cornell-Flux-Chamber">Cornell Flux Chamber<a class="anchor-link" href="#Cornell-Flux-Chamber">¶</a></h1>
+<h1 id="Flux-Chamber">Flux Chamber<a class="anchor-link" href="#Flux-Chamber">¶</a></h1><p><em>Written by Grace Lo &amp; Rachel Yan</em></p>
+<p>This integrated chamber system on the RP2040 operates in 2 phases, the air exchange  and the data logging phase, while leveraging low-power sleep cycles to reduce power consumption, making the system suitable for long-term field deployment. The air exchange phase is a series of motor movements to open and close the chamber with sleep cycles in between to allow for nature to do its work and passively switch out the air in the measurement device. The data logging phase collects environmental data from both the <a href="https://sensirion.com/products/catalog/SCD30">Sensirion SCD30</a> (CO₂, temperature, humidity) and the <a href="https://www.figarosensor.com/product/entry/ngm2611.html">Figaro NGM2611-E13</a> (methane), and writes this data with timestamps to a <code>.csv</code> file stored on an SD card. Between logging sessions, the RP2040 again enters a sleep state to reduce power consumption.</p>
+<p>All base motor, SD card and sensor functionality is handled by their respective libraries,  documented on the <a href="../Stepper_Motor/Stepper_Motor.html">Stepper Motor</a>, <a href="../CO2_v2/CO2.html">CO₂ Sensor</a>, <a href="../Methane/Methane.html">Methane Sensor</a> and <a href="../SD_Card/SD_Card.html">SD Card</a> pages. The intent of this document is to show how these modules are integrated and how the sleep/wake logic works.</p>
 </div>
 </div>
 </div>
@@ -7493,69 +7495,26 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<blockquote>
+<h2 id="Pin-Connections">Pin Connections<a class="anchor-link" href="#Pin-Connections">¶</a></h2><p>Breadboarding best practices should be followed. Use the shortest possible wires for maximum clock speed, which when using solderless protoboards is capped at ~20MHz due to pin capacitance. The pin connection for each components is already documented on their respective pages and the integrated version simply connects all the components together.</p>
+<img alt="Pin Connections" src="img/pin_connections.png" width="600"/>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Customizable-Parameters">Customizable Parameters<a class="anchor-link" href="#Customizable-Parameters">¶</a></h2><p>There is a <code>CUSTOMIZABLE PARAMETERS</code> section starting at line 169 that the user can change to accomodate their specific deployment environment:</p>
 <ul>
-<li><a href="#Project-overview">Project overview</a></li>
-<li><a href="#Code">Code</a></li>
-<li><a href="#Mechanical-design">Mechanical design</a></li>
-<li><a href="#Calibration-and-deployment-instructions">Calibration and deployment instructions</a></li>
-<li><a href="#Resources-and-literature">Resources and literature</a></li>
-</ul>
-</blockquote>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Project-overview">Project overview<a class="anchor-link" href="#Project-overview">¶</a></h2><p>Methane (CH4) emissions are increasing globally. Yet, partitioning different sources of methane emissions remains challenging due to the limited spatial and temporal scale of field measurements. Improving ground measurements of CH4 flux will allow us to identify and quantify how different policy and management actions can reduce emissions. In order to increase ground measurements of CH4 flux, we need affordable, rugged, and portable sensors that can be deployed for days to weeks at a time. This webpage documents the design, construction, and field testing of 10 prototype chambers to measure CH4 and carbon dioxide (CO2) flux from a variety of environments (e.g., manure, wetlands, lakes, agricultural fields). The development of these affordable, portable, rugged, and easy to use chambers will expand ground CH4 flux measurements world-wide, ultimately providing much-needed science to inform carbon policy.</p>
-<p><strong>This webpage is dynamic, and will be updated as the project progresses.</strong></p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All project code lives in <a href="https://github.com/CornellFluxChamber/ChamberCode">this git repository</a>. As we develop libraries for communicating with the various sensors that compose our floating flux chamber, those libraries will be documented on webpages linked below.</p>
-<ul>
-<li><a href="Flux_Chamber/Flux_Chamber.html">Flux chamber</a> $\longrightarrow$ The <strong>main body of code</strong> to run the integrated motor and data logging system.</li>
-<li><a href="CO2_v2/CO2.html">CO2 sensor (+temp, +humidity)</a> $\longrightarrow$ <strong>Selected Sensiron SCD30</strong>. Devices have been procured, students are building an interface library.</li>
-<li><a href="Methane/Methane.html">Methane sensor</a> $\longrightarrow$ <strong>Selected Figaro NGM 2511-E13</strong>. Devices have been procured, students are building an interface library.</li>
-<li><a href="SD_Card/SD_Card.html">SD card</a></li>
-<li><a href="Real_Time_Clock/Real_Time_Clock.html">Real time clock</a></li>
-<li><a href="Stepper_Motor/Stepper_Motor.html">Stepper motors</a></li>
-<li><a href="Terminal_Interface/Terminal_Interface.html">Terminal interface</a> $\longrightarrow$ A debugging interface to test motor and logging settings.</li>
-<li><a href="Testing/Testing.html">Testing</a> $\longrightarrow$ Results of an extended lab test.</li>
+<li><code>filename</code>: the name of the file to write to</li>
+<li><code>year, month, day, hour, min, sec</code>: the date and time for the data logging to start</li>
+<li><code>logging_period_ms</code>: time interval between logging the sensor readings</li>
+<li><code>num_of_measurements</code>: number of sensor readings per logging session</li>
+<li><code>sleep_time_ms</code>: time interval for chamber to stay open/closed to filter out the old air/develop new air, respectively</li>
+<li><code>debug_mode</code>: enables optional serial printing of logging/sleeping information during runtime for debugging purpose</li>
 </ul>
 </div>
 </div>
@@ -7567,7 +7526,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All code is in the <a href="https://github.com/CornellFluxChamber/ChamberCode.git">CornellFluxChamber</a> Github repository. The file <code>flux_chamber.c</code> contains all core logic for motor and sensor initialization, sleep management, and data logging.</p>
 </div>
 </div>
 </div>
@@ -7578,9 +7537,42 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Mechanical-design">Mechanical design<a class="anchor-link" href="#Mechanical-design">¶</a></h2><ul>
-<li><a href="./Mechanical/Mechanical.html">Design considerations</a> $\longrightarrow$ <strong>Agreed upon first variation shown on this page</strong>. Mechanical prototyping underway.</li>
-</ul>
+<h3 id="Includes">Includes<a class="anchor-link" href="#Includes">¶</a></h3><p>The first lines of code in the C source file include header files. <em>Don't forget to link these in the CMakeLists.txt file!</em></p>
+<p>The first set of header files are standard C headers and the Raspberry Pi Pico standard library for general use. <code>pico/stdlib.h</code> is what the SDK calls a "High-Level API." These high-level API's "provide higher level functionality that isn’t hardware related or provides a richer set of functionality above the basic hardware interfaces." The architecture of this SDK is described at length in the SDK manual. All libraries within the SDK are INTERFACE libraries. <code>pico/stdlib.h</code> in particular pulls in a number of lower-level hardware libraries, listed on page 196 of the C SDK guide.</p>
+<pre><code>#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include "pico/stdlib.h"
+</code></pre>
+<p>The remaining header files pull in additional API's for special functionality, the first of which is the <a href="http://elm-chan.org/fsw/ff/00index_e.html">FatFs</a> library adapted for SD cards.</p>
+<pre><code>#include "sd_card.h"
+#include "ff.h"
+</code></pre>
+<p>The next set of header files are for protothread utilities. There is a custom header file included in the provided git repository that defines the protothread functions.</p>
+<pre><code>#include "hardware/sync.h"
+#include "hardware/timer.h"
+#include "hardware/uart.h"
+#include "pico/multicore.h"
+#include "pt_cornell_rp2040_v1_3.h"
+</code></pre>
+<p>Next are the libraries that are included to give access to API's associated with the Pico unique ID, datetime, and Real Time Clock on the RP2040. These libraries will be used when logging data to the file.</p>
+<pre><code>#include "pico/unique_id.h"
+#include "pico/util/datetime.h"
+#include "hardware/rtc.h"
+</code></pre>
+<p>There are also libraries for both the CO₂ and the methane sensor. These libraries will be used to initialize and read data from the sensors.</p>
+<pre><code>// SCD30 co2 sensor
+#include "scd30_i2c.h"
+#include "sensirion_common.h"
+#include "sensirion_i2c_hal.h"
+
+// methane sensor
+#include "hardware/gpio.h"
+#include "hardware/adc.h"
+</code></pre>
+<p>Lastly, there is  a library dedicated to the sleep/wake process. It is provided in Rasberry Pi's <a href="https://github.com/raspberrypi/pico-extras">pico-extras</a> repository.</p>
+<pre><code>#include "pico/sleep.h"
+</code></pre>
 </div>
 </div>
 </div>
@@ -7591,7 +7583,14 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h3 id="main()"><code>main()</code><a class="anchor-link" href="#main()">¶</a></h3><p>The main program starts with calling <code>stdio_init_all()</code>. This function initializes stdio to communicate through either UART or USB, depending on the configurations in the <code>CMakeLists.txt</code> file.</p>
+<p>Then it launches core 1, which is the second core of the RP20240. The RP2040 chip has 2 cores that can run independently of each other, sharing peripherals and memory with each other. Core 0 is automatically launched in main, while core 1 needs to be explicitly launched with the calls:</p>
+<pre><code>multicore_reset_core1();
+multicore_launch_core1(&amp;core1_main);
+</code></pre>
+<p>Protothreads are extremely lightweight, stackless threads designed for memory-constrained systems; the library is written entirely as C macros by <a href="http://dunkels.com/adam/pt/publications.html">Adam Dunkels</a>. Traditionally, protothreads are used to execute tasks in parallel on the RP2040. It is interesting to note that, although the Raspberry Pi Pico supports running protothreads on both cores, we found that the logging system seemed to function correctly only if we are running it on core 1. This behavior was observed consistently and likely relates to the fact that core 1 is being called manually and the initialization of the logging system needs this extra time to start properly.</p>
+<p>Given that the system follows a sequential order, all steps (eg. motor movement, sensor reading and SD card writing) are contained in one protothread that is assigned to Core 1. Core 0 does not run any application logic and exists solely to start the multicore system and the scheduler.</p>
+<p>The thread scheduler <code>SCHED_ROUND_ROBIN</code> ensures the single protothread on Core 1 runs for the duration of the application. If there are additional protothreads assigned to core 1, they will each be allocated equal CPU time in the order they are initialized.</p>
 </div>
 </div>
 </div>
@@ -7602,11 +7601,83 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Electrical-design">Electrical design<a class="anchor-link" href="#Electrical-design">¶</a></h2><p>Will include documentation of schematic, layout, etc.</p>
-<ul>
-<li><a href="https://docs.google.com/spreadsheets/d/1rdSiY21HsB15AhayNILNWM_bd6uwlbhkO6BxMMC41wQ/edit?gid=0#gid=0">Sensor trade study</a></li>
-<li><a href="./Sensors/Options.pdf">Overview of sensor options, for discussion with colleagues</a></li>
-</ul>
+<h3 id="Protothread">Protothread<a class="anchor-link" href="#Protothread">¶</a></h3><h4 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h4><p>The protothread begins with variable declarations for the sensor values (<code>co2</code>, <code>temp</code>,<code>hum</code>) and date/time (<code>datetime_buf</code>, <code>datetime_str</code>).</p>
+<p>The next step is the hardware intializations, the code starts with calculating the day-of-the-week (dotw) based on a given date, then initializing the Real Time Clock.</p>
+<pre><code>// For day of the week calculation
+int calc_info[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+int calc_year = year - (month &lt; 3);
+int dotw = (calc_year + calc_year / 4 - calc_year / 100 + calc_year / 400 + 
+    calc_info[month - 1] + day) % 7;
+
+// Initialize date &amp; time
+rtc_init();
+datetime_t t = {
+    .year = year,
+    .month = month,
+    .day = day,
+    .dotw = dotw, // 0 is Sunday, so 5 is Friday
+    .hour = hour,
+    .min = min,
+    .sec = sec};
+rtc_set_datetime(&amp;t);
+</code></pre>
+<p>Next the SD card is initialized and mounted.</p>
+<pre><code>// Initialize SD card
+if (!sd_init_driver())
+{
+    printf("ERROR: Could not initialize SD card\r\n");
+    while (true);
+}
+
+// Mount drive
+fr = f_mount(&amp;fs, "0:", 1);
+if (fr != FR_OK)
+{
+    printf("ERROR: Could not mount filesystem (%d)\r\n", fr);
+    while (true);
+}
+</code></pre>
+<p>Then the CO₂ sensor is intialized and begins periodic measurement.</p>
+<pre><code>// Initialize SCD30 Sensor
+int16_t error = NO_ERROR;
+sensirion_i2c_hal_init();
+init_driver(SCD30_I2C_ADDR_61);
+
+// make sure the sensor is in a defined state 
+// (soft reset does not stop periodic measurement)
+scd30_stop_periodic_measurement();
+scd30_soft_reset();
+sensirion_i2c_hal_sleep_usec(2000000);
+uint8_t major = 0;
+uint8_t minor = 0;
+error = scd30_read_firmware_version(&amp;major, &amp;minor);
+if (error != NO_ERROR) {
+    printf("error executing read_firmware_version(): %i\n", error);
+    return error;
+}
+printf("firmware version major: %u minor: %u\n", major, minor);
+
+//begins periodic measurement
+error = scd30_start_periodic_measurement(0);
+if (error != NO_ERROR) {
+    printf("error executing start_periodic_measurement(): %i\n", error);
+    return error;
+}
+</code></pre>
+<p>The ADC for the methane sensor is also initialized.</p>
+<pre><code>adc_init();
+adc_gpio_init(26);      // Make sure GPIO is high-impedance, no pullups etc
+adc_select_input(0);    // Select ADC input 0 (GPIO26)
+</code></pre>
+<p>Finally, the GPIO pins for the stepper motor are initialized. In addition, it immediately disables the motor using the enable pin to cut the current.</p>
+<pre><code>gpio_init(18);              // enable pin
+gpio_set_dir(18, GPIO_OUT);
+gpio_init(17);              // step pin
+gpio_set_dir(17, GPIO_OUT);
+gpio_init(16);              // direction pin
+gpio_set_dir(16, GPIO_OUT);
+gpio_put(18, 1);            // disable motor when not in use
+</code></pre>
 </div>
 </div>
 </div>
@@ -7617,7 +7688,31 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h4 id="Low-Power-Sleep-Mode">Low-Power Sleep Mode<a class="anchor-link" href="#Low-Power-Sleep-Mode">¶</a></h4><p>To reduce power consumption and support long-duration field deployments, the system uses the RP2040's low-power sleep mode <code>pico/sleep.h</code>. Between data logging sessions, the RP2040 enters a sleep state and wakes automatically using a hardware alarm timer.</p>
+<p>At the beginning of each loop cycle, the code waits for the fifo to be drained for reliable output before entering sleep mode. Then the RP2040 switches to external crystal oscillator (XOSC) to save power, and sleeps for <code>sleep_time_ms</code> amount of time defined in custom parameters.</p>
+<pre><code>uart_default_tx_wait_blocking();
+sleep_run_from_xosc();
+awake = false;
+if (debug_mode) {
+    printf("Sleeping for %d seconds\n", sleep_time_ms/1000);
+}
+uart_default_tx_wait_blocking();
+if (sleep_goto_sleep_for(sleep_time_ms, &amp;alarm_sleep_callback)) {
+    // Empty for power efficiency
+}
+</code></pre>
+<p>To wake up the RP2040 from sleep, we first defined a callback function, which triggers when the sleep time expires, and it powers up again by re-enablling the clocks and generators.</p>
+<pre><code>static bool awake;
+static void alarm_sleep_callback(uint alarm_id) {
+    uart_default_tx_wait_blocking();
+    awake = true;
+    hardware_alarm_set_callback(alarm_id, NULL);
+    hardware_alarm_unclaim(alarm_id);
+}
+</code></pre>
+<pre><code>// Re-enabling clock sources and generators.
+sleep_power_up();
+</code></pre>
 </div>
 </div>
 </div>
@@ -7628,7 +7723,11 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Calibration-and-deployment-instructions">Calibration and deployment instructions<a class="anchor-link" href="#Calibration-and-deployment-instructions">¶</a></h2><p>To be populated.</p>
+<h4 id="Motor-Movement">Motor Movement<a class="anchor-link" href="#Motor-Movement">¶</a></h4><p>When first deployed, the system begins by opening the chamber for the first round of air exchange. It stays open for <code>sleep_time_ms</code> to air out the chamber, then closes and waits another <code>sleep_time_ms</code> before moving into the data logging phase. An enable pin on the motor driver enables or disables the current entering the motor. While not in use, the current is always disabled to conserve power and prevent the motor from overheating. The motor code is wrapped in the function <code>move_motor</code> that takes in arguments for the direction and number of steps the motor should take, on the order of thousands. Details on how <code>move_motor</code> works is described on the <a href="../Stepper_Motor/Stepper_Motor.html">Stepper Motor</a> page. Here, we simply call the function and input the correct direction and number of steps, the current number of steps is 32000, which is approximately 1 minute long.</p>
+<pre><code>move_motor(1, 32000);   // ccw for 32000 steps
+...                     // sleep time
+move_motor(0, 32000);   // cw for 32000 steps
+</code></pre>
 </div>
 </div>
 </div>
@@ -7639,41 +7738,47 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Resources-and-literature">Resources and literature<a class="anchor-link" href="#Resources-and-literature">¶</a></h2><ul>
-<li><a href="./Literature/Proposal.pdf">The proposal for this project, which describes our objectives</a></li>
-<li><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024JG008035">Self-Made Equipment for Automatic Methane Diffusion and Ebullition Measurements From Aquatic Environments</a></li>
-<li>[Technical note: Facilitating the use of low-cost methane (CH4)</li>
-</ul>
-<p>sensors in flux chambers – calibration, data processing, and
-an open-source make-it-yourself logger](<a href="https://bg.copernicus.org/articles/17/3659/2020/">https://bg.copernicus.org/articles/17/3659/2020/</a>)</p>
-<ul>
-<li><a href="https://www.sciencedirect.com/science/article/pii/S0048969723015115?via%3Dihub">Methane and carbon dioxide fluxes at high spatiotemporal resolution from a small temperate lake</a></li>
-<li><a href="https://github.com/JonasStage/Methane-and-CO2-sensor/tree/main">Jonas Stage git repo</a></li>
-<li><a href="./Literature/Building_J_Sensors.pdf">Building J-Sensors</a></li>
-<li><a href="./Literature/Calibrating_J_Sensors.pdf">Calibrating J-Sensors</a></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h4 id="Data-Logging">Data Logging<a class="anchor-link" href="#Data-Logging">¶</a></h4><p>At the start of each logging cycle, the system creates or opens a <code>.csv</code> file on the SD card. If the file does not exist, a new one will be created. If the file already exists, new data will be appended to the file. The contents of the file are divided into two sections - header and data. The header includes the Pico ID so that each system can be identified uniquely when many flux chambers are deployed. It also defines each of the columns. At present, the columns are <code>DATETIME, TEMP, HUM, CO2, CH4</code>.</p>
+<pre><code>FIL f_dst;
+pico_unique_board_id_t PICO_ID;
+
+if (FR_OK != f_open(&amp;f_dst, filename, FA_WRITE | FA_OPEN_APPEND))
+{
+    printf("Cannot create '%s'\r\n", filename);
+}
+else
+{
+    UINT wr_count = 0;
+    char *NEW_LINE = "\n";
+
+    // write the header once
+    if (first)
+    {
+        first = false; 
+
+        // Write pico id
+        pico_get_unique_board_id(&amp;PICO_ID);
+        char id_str[PICO_UNIQUE_BOARD_ID_SIZE_BYTES * 2]; // Buffer for hexadecimal string
+        for (int i = 0; i &lt; PICO_UNIQUE_BOARD_ID_SIZE_BYTES; i++)
+        {
+            // Append each byte in hexadecimal format to the buffer
+            sprintf(&amp;id_str[i * 2], "%02X", PICO_ID.id[i]);
+        }
+        printf("ID is: %s \n", id_str);
+        f_write(&amp;f_dst, "Pico ID,", strlen("Pico ID,"), &amp;wr_count);
+        f_write(&amp;f_dst, id_str, strlen(id_str), &amp;wr_count); // Write the ID string to the file
+        f_write(&amp;f_dst, NEW_LINE, strlen(NEW_LINE), &amp;wr_count);
+
+        // Write header
+        char *DATA_HEADER = "DATETIME,TEMP,HUM,CO2,CH4\n";
+        f_write(&amp;f_dst, DATA_HEADER, strlen(DATA_HEADER), &amp;wr_count);
+    }
+}
+</code></pre>
+<p>There will be <code>num_of_measurements</code> of data each logging cycle, and it sleeps every <code>logging_period_ms</code> in between each entry. Each log entry retrieves and writes the date/time, the data from the CO₂ and methane sensor, and creates a new line after the current log is completed.</p>
+<p>An example of the terminal output (when debugging mode is on) and the corresponding CSV file is provided below:</p>
+<img alt="Serial Terminal" src="img/serial_monitor.png" width="700"/>
+<img alt="CSV File" src="img/csv_file.png" width="400"/>
 </div>
 </div>
 </div>

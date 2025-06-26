@@ -7483,8 +7483,7 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Methane-Sensor">Methane Sensor<a class="anchor-link" href="#Methane-Sensor">¶</a></h1><p><em>Written by Grace Lo &amp; Alina Wang</em></p>
-<p>The methane recording procedure was developed and tested on the <a href="https://www.figarosensor.com/product/entry/ngm2611.html">Figaro NGM2611-E13</a> Methane Sensor Module. It is pre-calibrated at controlled humidity and temperature and outputs continuous analog results, ideal for detecting changes. The NGM2611-E13 has been used in previous research, including the original flux chamber prototype. As such, it has a known calibration method and are readily deployable. The data is provided in raw values to reduce compuation on the device and give scientists the autonomy to post-process as they see fit. It is important to note that when energizing the sensor after a period of inactivation, the resistance drops significantly causing high voltage readings. However after a moment of recovery, it will stabilize and be ready for data collection. Current lab testing (in absense of varying methane concentrations) has shown values of 25 to 310, with the output generally hovering at approximately 20 to 40.</p>
-<p>At the current moment, the SD card and methane sensor functionality are combined in the <code>SD_Card_Methane</code> library. However, there are future plans to separate the two for a more modular design with the methane sensor interface in a standalone <code>Methane</code> library.</p>
+<p>The methane recording procedure was developed and tested on the <a href="https://www.figarosensor.com/product/entry/ngm2611.html">Figaro NGM2611-E13</a> Methane Sensor Module. It is pre-calibrated at controlled humidity and temperature and outputs continuous analog results, ideal for detecting changes. The NGM2611-E13 has been used in previous research, including the original flux chamber prototype. As such, it has a known calibration method and are readily deployable. The data is provided in raw values to reduce compuation on the device and give users the autonomy to post-process as they see fit. It is important to note that when energizing the sensor after a period of inactivation, the resistance drops significantly causing high voltage readings. However after a moment of recovery, it will stabilize and be ready for data collection. Current lab testing (in absense of varying methane concentrations) has shown values ranging from 25 to 310, with the output generally hovering at approximately 20 to 40.</p>
 </div>
 </div>
 </div>
@@ -7514,7 +7513,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All <code>SD_Card_Methane</code> library code is in [this git repository]. The code for interfacing with the methane sensor is incorporated into <code>sd_card_serial.c</code>.</p>
+<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All code is in the <a href="https://github.com/CornellFluxChamber/ChamberCode.git">CornellFluxChamber</a> Github repository. The code for interfacing with the methane sensor is incorporated into <code>flux_chamber.c</code>.</p>
 </div>
 </div>
 </div>
@@ -7526,8 +7525,10 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h3 id="Includes">Includes<a class="anchor-link" href="#Includes">¶</a></h3><p>The first lines of code in the C source file include header files. <em>Don't forget to link these in the CMakeLists.txt file!</em></p>
-<p>In addition to the header files mentioned in the <a href="../SD_Card/SD_Card.html">SD Card</a> library, the following files enable the specified GPIO pin to read continuous analog values instead of binary digital values.</p>
-<pre><code>#include "hardware/gpio.h"
+<p>The following files are required to interface with the methane sensor and enable the specified GPIO pin to read continuous analog values instead of binary digital values.</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include "pico/stdlib.h"
+#include "hardware/gpio.h"
 #include "hardware/adc.h"
 </code></pre>
 </div>
@@ -7540,7 +7541,11 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="main()"><code>main()</code><a class="anchor-link" href="#main()">¶</a></h3><p>There is currently no additional functionality in main, but once the separate library is made to isolate the interaction with the methane sensor, its protothread will be added to the thread schedule.</p>
+<h3 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h3><p>The C source file initializes the analog-to-digital (ADC) converter, making sure to select 1 of 3 ADC inputs (GPIO 26, GPIO 27, or GPIO 28).</p>
+<pre><code>adc_init();
+adc_gpio_init(26);
+adc_select_input(0);
+</code></pre>
 </div>
 </div>
 </div>
@@ -7551,16 +7556,10 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="File-Protothread">File Protothread<a class="anchor-link" href="#File-Protothread">¶</a></h3><h4 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h4><p>The protothread begins with initializing the analog-to-digital (ADC) converter, making sure to select 1 of 3 ADC inputs (GPIO 26, GPIO 27, or GPIO 28).</p>
-<pre><code>adc_init();
-adc_gpio_init(26);
-adc_select_input(0);
-</code></pre>
-<h4 id="Serial-Terminal-Write-Command">Serial Terminal Write Command<a class="anchor-link" href="#Serial-Terminal-Write-Command">¶</a></h4><p>Within the <code>write</code> command, the methane sensor module is read using <code>adc_read()</code> and directly written to the file.</p>
-<p>An example of <code>setdate</code>, <code>setfreq</code>, <code>write</code>, and <code>print</code> used on the serial terminal and the corresponding CSV file is provided below:</p>
-<img alt="Serial Terminal" src="img/serial_terminal.png" width="400"/>
+<h3 id="Read">Read<a class="anchor-link" href="#Read">¶</a></h3><p>The methane sensor module is read using <code>adc_read()</code> and directly written to the file.</p>
+<p>An example of the data logging to a CSV file is provided below:</p>
 <img alt="CSV File" src="img/csv_file.png" width="400"/>
-<p>Note that CO2, TEMP, and HUM columns are empty and integration with the combined sensor still needs to be completed.</p>
+<p>Note that our current lab setup does not have the proper equipment to artificially test methane levels.</p>
 </div>
 </div>
 </div>

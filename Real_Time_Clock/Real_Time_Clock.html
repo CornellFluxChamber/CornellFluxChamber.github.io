@@ -7483,7 +7483,7 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Real-Time-Clock">Real Time Clock<a class="anchor-link" href="#Real-Time-Clock">¶</a></h1><p><em>Written by Grace Lo &amp; Alina Wang</em></p>
-<p>The Real Time Clock (RTC) is directly implemented in the <code>SD_Card_Methane</code> library to accurately keep track of time and make note of when data is logged. The RP2040 has built-in RTC functionality, so additional hardware is not necessary.</p>
+<p>The Real Time Clock (RTC) is directly implemented in <code>flux_chamber.c</code> to accurately keep track of time and make note of when data is logged. The RP2040 has built-in RTC functionality, so additional hardware is not necessary.</p>
 </div>
 </div>
 </div>
@@ -7494,8 +7494,9 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="API">API<a class="anchor-link" href="#API">¶</a></h2><p>For the <code>SD_Card_Methane</code> library, the initial date and time are user-defined in the serial terminal interface using: <code>setdate &lt;yyyy-mm-dd&gt; &lt;hh:mm:ss&gt;</code>. Otherwise, the RP2040 requires an internet connection to synchronize to the NTP server.</p>
-<p>For more information regarding the serial terminal interface, refer to <a href="../SD_Card/SD_Card.html">SD Card</a>.</p>
+<h2 id="API">API<a class="anchor-link" href="#API">¶</a></h2><p>The date and time is defined manually. Otherwise, the RP2040 requires an internet connection to synchronize to the NTP server which results in extra setup steps that are not needed for the chamber's functionality.</p>
+<p>For <code>flux_chamber.c</code>, the initial date and time are defined under the <code>CUSTOMIZABLE PARAMETERS</code> section.</p>
+<p>For <code>terminal_interface.c</code>, the initial date and time are user-defined in the serial terminal interface using: <code>setdate &lt;yyyy-mm-dd&gt; &lt;hh:mm:ss&gt;</code>. The default is set to <code>Sunday 01 January 00:00:00 2000</code>.</p>
 </div>
 </div>
 </div>
@@ -7506,7 +7507,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All <code>SD_Card_Methane</code> library code is in [this git repository]. The code for the serial terminal user interface is in <code>sd_card_serial.c</code> and is organized in protothreads for modularity.</p>
+<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All code is in the <a href="https://github.com/CornellFluxChamber/ChamberCode.git">CornellFluxChamber</a> Github repository and is incorporated into <code>flux_chamber.c</code>.</p>
 </div>
 </div>
 </div>
@@ -7518,9 +7519,11 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h3 id="Includes">Includes<a class="anchor-link" href="#Includes">¶</a></h3><p>The first lines of code in the C source file include header files. <em>Don't forget to link these in the CMakeLists.txt file!</em></p>
-<p>API's associated with datetime and Real Time Clock on the RP2040 are used when logging data to the file.</p>
-<pre><code>#include "pico/util/datetime.h"
+<p>The following files are required to use the Real Time Clock.</p>
+<pre><code>#include &lt;stdio.h&gt;
 #include "hardware/rtc.h"
+#include "pico/stdlib.h"
+#include "pico/util/datetime.h"
 </code></pre>
 </div>
 </div>
@@ -7532,7 +7535,23 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="main()"><code>main()</code><a class="anchor-link" href="#main()">¶</a></h3><p>The file protothread that controls the SD card writing and user interface is assigned to core 1. In particular, it is added to the core 1 function <code>core1_main</code> with scheduling priority <code>SCHED_ROUND_ROBIN</code>. If there are additional protothreads assigned to core 1, they will each be allocated equal CPU time in the order they are initialized.</p>
+<h3 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h3><p>The Real Time Clock module is initialized and a <code>datetime_t</code> struct is defined as the initial date and time.</p>
+<pre><code>rtc_init();
+datetime_t t = {
+    .year = 2000,
+    .month = 01,
+    .day = 01,
+    .dotw = 0, // 0 is Sunday, so 5 is Friday
+    .hour = 00,
+    .min = 00,
+    .sec = 00};
+rtc_set_datetime(&amp;t);
+</code></pre>
+<p>A <a href="https://www.geeksforgeeks.org/dsa/find-day-of-the-week-for-a-given-date/">day-of-the-week calculation</a> is included to streamline the initial definition process.</p>
+<pre><code>int calc_info[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+int calc_year = year - (month &lt; 3);
+int dotw = (calc_year + calc_year / 4 - calc_year / 100 + calc_year / 400 + calc_info[month - 1] + day) % 7;
+</code></pre>
 </div>
 </div>
 </div>
@@ -7543,10 +7562,9 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="File-Protothread">File Protothread<a class="anchor-link" href="#File-Protothread">¶</a></h3><h4 id="Serial-Terminal">Serial Terminal<a class="anchor-link" href="#Serial-Terminal">¶</a></h4><p>The serial terminal runs indefinitely when the RP2040 is powered on. At the start of each loop, it gets the current date/time and converts it to a string. The wait time allots sufficient time for <code>rtc_get_datetime(&amp;t)</code> to finish executing. Otherwise, a subsequent time-dependent command can exhibit weird behavior.</p>
+<h3 id="Read">Read<a class="anchor-link" href="#Read">¶</a></h3><p>At the start of each data logging loop, the current date/time is read and converted to a string.</p>
 <pre><code>rtc_get_datetime(&amp;t);
 datetime_to_str(datetime_str, sizeof(datetime_buf), &amp;t);
-sleep_ms(100);
 </code></pre>
 </div>
 </div>

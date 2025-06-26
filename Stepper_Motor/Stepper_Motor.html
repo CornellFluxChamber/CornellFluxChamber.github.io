@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>index</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>Stepper_Motor</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <style type="text/css">
     pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -7482,7 +7482,8 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Cornell-Flux-Chamber">Cornell Flux Chamber<a class="anchor-link" href="#Cornell-Flux-Chamber">¶</a></h1>
+<h1 id="Stepper-Motor">Stepper Motor<a class="anchor-link" href="#Stepper-Motor">¶</a></h1><p><em>Written by Grace Lo, Rachel Yan, &amp; Henry Sigel</em></p>
+<p>The 12V rated <a href="https://www.adafruit.com/product/324">NEMA-17</a> Stepper Motor is used to control the mechanical design of the flux chamber by opening and closing the chamber. It uses <a href="https://www.adafruit.com/product/6121?srsltid=AfmBOooewzKw0BhmeOOv3fSTSSEoolT53hRkdlx3yQKAozX7bzYRfrfr">Adafruit's TMC2209</a> Stepper Motor Driver Breakout Board to control the direction, step, and current flow. The current flow is used for the motor's holding torque and without it, the motor's position can shift . But since it is attached to a threaded metal rod, the change is negligible. Therefore, when the motor is not in use, the current flow is disabled to reduce power consumption and prevent the motor from overheating.</p>
 </div>
 </div>
 </div>
@@ -7493,69 +7494,22 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<blockquote>
+<h2 id="Pin-Connections">Pin Connections<a class="anchor-link" href="#Pin-Connections">¶</a></h2><p>Breadboarding best practices should be followed.</p>
+<img alt="Pin Connections" src="img/pin_connections.png" width="400"/>
+<p>Pin connections from the <strong>motor driver → Pico</strong> are as follows:</p>
 <ul>
-<li><a href="#Project-overview">Project overview</a></li>
-<li><a href="#Code">Code</a></li>
-<li><a href="#Mechanical-design">Mechanical design</a></li>
-<li><a href="#Calibration-and-deployment-instructions">Calibration and deployment instructions</a></li>
-<li><a href="#Resources-and-literature">Resources and literature</a></li>
+<li>VDD → 3V3(OUT) (pin 36)</li>
+<li>GND → GND</li>
+<li>DIR → GPIO 16 (pin 21)</li>
+<li>STEP → GPIO 17 (pin 22)</li>
+<li>EN → GPIO 18 (pin 24)</li>
 </ul>
-</blockquote>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Project-overview">Project overview<a class="anchor-link" href="#Project-overview">¶</a></h2><p>Methane (CH4) emissions are increasing globally. Yet, partitioning different sources of methane emissions remains challenging due to the limited spatial and temporal scale of field measurements. Improving ground measurements of CH4 flux will allow us to identify and quantify how different policy and management actions can reduce emissions. In order to increase ground measurements of CH4 flux, we need affordable, rugged, and portable sensors that can be deployed for days to weeks at a time. This webpage documents the design, construction, and field testing of 10 prototype chambers to measure CH4 and carbon dioxide (CO2) flux from a variety of environments (e.g., manure, wetlands, lakes, agricultural fields). The development of these affordable, portable, rugged, and easy to use chambers will expand ground CH4 flux measurements world-wide, ultimately providing much-needed science to inform carbon policy.</p>
-<p><strong>This webpage is dynamic, and will be updated as the project progresses.</strong></p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All project code lives in <a href="https://github.com/CornellFluxChamber/ChamberCode">this git repository</a>. As we develop libraries for communicating with the various sensors that compose our floating flux chamber, those libraries will be documented on webpages linked below.</p>
+<p>And on the terminal block:</p>
 <ul>
-<li><a href="Flux_Chamber/Flux_Chamber.html">Flux chamber</a> $\longrightarrow$ The <strong>main body of code</strong> to run the integrated motor and data logging system.</li>
-<li><a href="CO2_v2/CO2.html">CO2 sensor (+temp, +humidity)</a> $\longrightarrow$ <strong>Selected Sensiron SCD30</strong>. Devices have been procured, students are building an interface library.</li>
-<li><a href="Methane/Methane.html">Methane sensor</a> $\longrightarrow$ <strong>Selected Figaro NGM 2511-E13</strong>. Devices have been procured, students are building an interface library.</li>
-<li><a href="SD_Card/SD_Card.html">SD card</a></li>
-<li><a href="Real_Time_Clock/Real_Time_Clock.html">Real time clock</a></li>
-<li><a href="Stepper_Motor/Stepper_Motor.html">Stepper motors</a></li>
-<li><a href="Terminal_Interface/Terminal_Interface.html">Terminal interface</a> $\longrightarrow$ A debugging interface to test motor and logging settings.</li>
-<li><a href="Testing/Testing.html">Testing</a> $\longrightarrow$ Results of an extended lab test.</li>
+<li>⊕ → motor input voltage (12V)</li>
+<li>⊖ → GND</li>
+<li>1A/B → red/yellow</li>
+<li>2A/B → green/gray</li>
 </ul>
 </div>
 </div>
@@ -7567,7 +7521,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All code is in the <a href="https://github.com/CornellFluxChamber/ChamberCode.git">CornellFluxChamber</a> Github repository. The code for running the stepper motor is incorporated into <code>flux_chamber.c</code>.</p>
 </div>
 </div>
 </div>
@@ -7578,9 +7532,11 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Mechanical-design">Mechanical design<a class="anchor-link" href="#Mechanical-design">¶</a></h2><ul>
-<li><a href="./Mechanical/Mechanical.html">Design considerations</a> $\longrightarrow$ <strong>Agreed upon first variation shown on this page</strong>. Mechanical prototyping underway.</li>
-</ul>
+<h3 id="Includes">Includes<a class="anchor-link" href="#Includes">¶</a></h3><p>The first lines of code in the C source file include header files. <em>Don't forget to link these in the CMakeLists.txt file!</em></p>
+<p>The following files are required to enable the GPIO pins for the motor driver.</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include "pico/stdlib.h"
+</code></pre>
 </div>
 </div>
 </div>
@@ -7591,7 +7547,15 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h3 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h3><p>The C source file initializes the GPIO's as outputs. In addition, it immediately disables the motor using the enable pin to cut the current.</p>
+<pre><code>gpio_init(18);              // enable pin
+gpio_set_dir(18, GPIO_OUT);
+gpio_init(17);              // step pin
+gpio_set_dir(17, GPIO_OUT);
+gpio_init(16);              // direction pin
+gpio_set_dir(16, GPIO_OUT);
+gpio_put(18, 1);            // disable motor when not in use
+</code></pre>
 </div>
 </div>
 </div>
@@ -7602,78 +7566,22 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Electrical-design">Electrical design<a class="anchor-link" href="#Electrical-design">¶</a></h2><p>Will include documentation of schematic, layout, etc.</p>
-<ul>
-<li><a href="https://docs.google.com/spreadsheets/d/1rdSiY21HsB15AhayNILNWM_bd6uwlbhkO6BxMMC41wQ/edit?gid=0#gid=0">Sensor trade study</a></li>
-<li><a href="./Sensors/Options.pdf">Overview of sensor options, for discussion with colleagues</a></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Calibration-and-deployment-instructions">Calibration and deployment instructions<a class="anchor-link" href="#Calibration-and-deployment-instructions">¶</a></h2><p>To be populated.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Resources-and-literature">Resources and literature<a class="anchor-link" href="#Resources-and-literature">¶</a></h2><ul>
-<li><a href="./Literature/Proposal.pdf">The proposal for this project, which describes our objectives</a></li>
-<li><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024JG008035">Self-Made Equipment for Automatic Methane Diffusion and Ebullition Measurements From Aquatic Environments</a></li>
-<li>[Technical note: Facilitating the use of low-cost methane (CH4)</li>
-</ul>
-<p>sensors in flux chambers – calibration, data processing, and
-an open-source make-it-yourself logger](<a href="https://bg.copernicus.org/articles/17/3659/2020/">https://bg.copernicus.org/articles/17/3659/2020/</a>)</p>
-<ul>
-<li><a href="https://www.sciencedirect.com/science/article/pii/S0048969723015115?via%3Dihub">Methane and carbon dioxide fluxes at high spatiotemporal resolution from a small temperate lake</a></li>
-<li><a href="https://github.com/JonasStage/Methane-and-CO2-sensor/tree/main">Jonas Stage git repo</a></li>
-<li><a href="./Literature/Building_J_Sensors.pdf">Building J-Sensors</a></li>
-<li><a href="./Literature/Calibrating_J_Sensors.pdf">Calibrating J-Sensors</a></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h3 id="Running-the-Motor">Running the Motor<a class="anchor-link" href="#Running-the-Motor">¶</a></h3><p>The motor code is wrapped in a <code>move_motor</code> function that takes in arguments for the direction and number of steps the motor should take, on the order of thousands. It first enables current to the motor and defines the direction (0 for clockwise/up, 1 for counterclockwise/down). Then, the STEP pin is toggled for the amount of <code>steps</code> defined, which visibly is the length of time for the motor movement. Note that the for loop keeps toggling the STEP pin because the stepper motor is triggered by rising edges, so one toggle means one step. The <code>sleep_us(1000)</code> delay between toggles ensures the motor driver has sufficient response time for each step, which in this case is the maximum frequency of 1/1000us.</p>
+<pre><code>// Function to move motor - 0 is cw up, 1 is ccw down
+void move_motor(int direction, int steps)
+{
+    gpio_put(18, 0);            // enable motor
+    gpio_put(16, direction);
+    for (int i = 0; i &lt; steps; i++)
+    {
+        gpio_put(17, true);
+        sleep_us(1000);
+        gpio_put(17, false);
+        sleep_us(1000);
+    }
+    gpio_put(18, 1);            // disable motor
+}
+</code></pre>
 </div>
 </div>
 </div>

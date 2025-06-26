@@ -7482,8 +7482,8 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="SD-Card-Data-Logging">SD Card Data Logging<a class="anchor-link" href="#SD-Card-Data-Logging">¶</a></h1><p><em>Written by Grace Lo &amp; Alina Wang</em></p>
-<p>The <code>SD_Card_Methane</code> library was developed and tested on the <a href="https://www.adafruit.com/product/254">Adafruit #254</a> MicroSD card breakout board. It logs sensor data and the associated date/time at a user-defined frequency into a .csv file format. The interface to the card is handled by a <a href="http://elm-chan.org/fsw/ff/00index_e.html">FatFs</a> library adapted for SD cards from <a href="https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico">carlk3</a>. The basic card functionality, including mounting the drive, opening/closing files, and read/write data is borrowed from <a href="https://people.ece.cornell.edu/land/courses/ece4760/RP2040/C_SDK_memory/SD_card/index_sd_card.html">Bruce Land</a>. The command line interface is borrowed from <a href="https://github.com/hathach/tinyusb/blob/master/examples/host/msc_file_explorer/src/msc_app.c">tinyUSB</a> examples to test the SD card functions. The SD card is completely handled by FatFs.</p>
+<h1 id="SD-Card">SD Card<a class="anchor-link" href="#SD-Card">¶</a></h1><p><em>Written by Grace Lo &amp; Alina Wang</em></p>
+<p>Interfacing with an SD card was developed and tested on the <a href="https://www.adafruit.com/product/254">Adafruit #254</a> MicroSD card breakout board. It communicates over SPI to log sensor data and the associated date/time at a user-defined frequency into a .csv file format. The interface to the card is handled by a <a href="http://elm-chan.org/fsw/ff/00index_e.html">FatFs</a> library adapted for SD cards from <a href="https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico">carlk3</a>. The basic card functionality, including mounting the drive, opening/closing files, and read/write data is borrowed from <a href="https://people.ece.cornell.edu/land/courses/ece4760/RP2040/C_SDK_memory/SD_card/index_sd_card.html">Bruce Land</a>. The command line interface is borrowed from <a href="https://github.com/hathach/tinyusb/blob/master/examples/host/msc_file_explorer/src/msc_app.c">tinyUSB</a> examples to test the SD card functions. The SD card is completely handled by FatFs.</p>
 </div>
 </div>
 </div>
@@ -7517,36 +7517,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="API">API<a class="anchor-link" href="#API">¶</a></h2><p>For the SD card library, the card must be formatted as <strong>FAT32</strong>. The initial date/time, data logging frequency, and file name are user-defined in the serial terminal interface.</p>
-<p>The <a href="https://www.adafruit.com/product/954">Adafruit #954</a> USB to TTL Serial cable can be used to connect to a PC.</p>
-<ul>
-<li>RX (white) → UART0_TX (gpio 0)</li>
-<li>TX (green) → UART0_RX (gpio 1)</li>
-<li>GND (black) → GND</li>
-</ul>
-<p>When the system resets, the driver prints SD card information to the serial terminal. Then you can issue the following commands:</p>
-<ul>
-<li><code>setdate &lt;yyyy-mm-dd&gt; &lt;hh:mm:ss&gt;</code> -- set the RTC intialization of date/time</li>
-<li><code>setfreq &lt;frequency&gt;</code> -- set the data logging frequency in ms (default set to 5 seconds)</li>
-<li><code>write &lt;filename&gt;</code> -- write data logging to a file</li>
-<li><code>print &lt;filename&gt;</code> -- print the content of the filename</li>
-<li><code>rm &lt;filename&gt;</code> -- delinks (deletes) a file</li>
-<li><code>ls &lt;directory&gt;</code> -- lists directory contents; default is current directory</li>
-<li><code>cd &lt;directory&gt;</code> -- changes current directory</li>
-<li><code>mkdir &lt;directory&gt;</code> -- new directory</li>
-<li><code>help</code> -- prints all valid commands</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All <code>SD_Card_Methane</code> library code is in [this git repository]. The code for the serial terminal user interface is in <code>sd_card_serial.c</code> and is organized in protothreads for modularity. Protothreads are extremely lightweight, stackless threads designed for memory-constrained systems; the library is written entirely as C macros by <a href="http://dunkels.com/adam/pt/publications.html">Adam Dunkels</a>.</p>
+<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All code is in the <a href="https://github.com/CornellFluxChamber/ChamberCode.git">CornellFluxChamber</a> Github repository. The code for interfacing with the SD card is incorporated into <code>flux_chamber.c</code>. It is important to note that the SD card only works reliably when its corresponding code is placed on core 1 of the dual-core Pico processor. We hypothesize that manually starting core 1 in the <code>main()</code> function provides sufficient time for the SD card to start up in a way that cannot be replicated by time delays.</p>
 </div>
 </div>
 </div>
@@ -7558,28 +7529,14 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h3 id="Includes">Includes<a class="anchor-link" href="#Includes">¶</a></h3><p>The first lines of code in the C source file include header files. <em>Don't forget to link these in the CMakeLists.txt file!</em></p>
-<p>The first set of header files are standard C headers and the Raspberry Pi Pico standard library for general use. <code>pico/stdlib.h</code> is what the SDK calls a "High-Level API." These high-level API's "provide higher level functionality that isn’t hardware related or provides a richer set of functionality above the basic hardware interfaces." The architecture of this SDK is described at length in the SDK manual. All libraries within the SDK are INTERFACE libraries. <code>pico/stdlib.h</code> in particular pulls in a number of lower-level hardware libraries, listed on page 196 of the C SDK guide.</p>
+<p>The following files are required to interface with the SD card, including the <a href="http://elm-chan.org/fsw/ff/00index_e.html">FatFs</a> library adapted for SD cards.</p>
 <pre><code>#include &lt;stdlib.h&gt;
 #include &lt;stdio.h&gt;
 #include &lt;string.h&gt;
 #include "pico/stdlib.h"
-</code></pre>
-<p>The remaining header files pull in additional API's for special functionality, the first of which is the <a href="http://elm-chan.org/fsw/ff/00index_e.html">FatFs</a> library adapted for SD cards.</p>
-<pre><code>#include "sd_card.h"
+#include "sd_card.h"
 #include "ff.h"
 </code></pre>
-<p>The next set of header files are for protothread utilities. There is a custom header file included in the provided git repository that defines the protothread functions.</p>
-<pre><code>#include "hardware/sync.h"
-#include "hardware/timer.h"
-#include "hardware/uart.h"
-#include "pico/multicore.h"
-#include "pt_cornell_rp2040_v1_3.h"
-</code></pre>
-<p>In addition, libraries are included to give access to API's associated with the Pico unique ID, datetime, and Real Time Clock on the RP2040. These libraries will be used when logging data to the file.</p>
-<pre><code>#include "pico/unique_id.h"
-#include "pico/util/datetime.h"
-#include "hardware/rtc.h"
-</code></pre>
 </div>
 </div>
 </div>
@@ -7590,25 +7547,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="main()"><code>main()</code><a class="anchor-link" href="#main()">¶</a></h3><p>The first line in <code>main()</code> is a call to <code>stdio_init_all()</code>. This function initializes stdio to communicate through either UART or USB, depending on the configurations in the <code>CMakeLists.txt</code> file.</p>
-<p>Then the protothreads are each assigned to a core. The RP2040 chip has 2 cores that can run independently of each other, sharing peripherals and memory with each other. Core 0 is automatically launched in main, while core 1 needs to be explicitly launched with the calls:</p>
-<pre><code>multicore_reset_core1();
-multicore_launch_core1(&amp;core1_main);
-</code></pre>
-<p>A protothread that toggles the on-board LED is added to core 0 with scheduling priority <code>SCHED_PRIORITY</code>. If there are additional protothreads assigned to core 0, their scheduling priority can be defined when adding the thread to the core to allow higher priority threads more CPU time. <em>This LED protothread is not essential to the SD card functionality and can be removed.</em></p>
-<p>The file protothread that controls the SD card writing and user interface is assigned to core 1. In particular, it is added to the core 1 function <code>core1_main</code> with scheduling priority <code>SCHED_ROUND_ROBIN</code>. If there are additional protothreads assigned to core 1, they will each be allocated equal CPU time in the order they are initialized.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="File-Protothread">File Protothread<a class="anchor-link" href="#File-Protothread">¶</a></h3><h4 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h4><p>The protothread begins with variable declarations for processing serial input (<code>cmd</code>, <code>arg1</code>, <code>arg2</code>, <code>arg3</code>, <code>token</code>), date/time (<code>datetime_buf</code>, <code>datetime_str</code>), and frequency (<code>logging_frequency_ms</code>). In addition, the <code>datetime_t</code> struct is initialized to a default Sunday 01 January 00:00:00 2000 and the logging frequency is initialized to a default 5000 ms (or 5 seconds).</p>
-<p>Then the SD card is initialized and the filesystem is mounted.</p>
+<h3 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h3><p>The SD card is initialized and the filesystem is mounted using functions provided by the <a href="http://elm-chan.org/fsw/ff/00index_e.html">FatFs</a> library.</p>
 <pre><code>// Initialize SD card
 if (!sd_init_driver())
 {
@@ -7624,19 +7563,6 @@ if (fr != FR_OK)
     while (true);
 }
 </code></pre>
-<h4 id="Serial-Terminal">Serial Terminal<a class="anchor-link" href="#Serial-Terminal">¶</a></h4><p>The serial terminal runs indefinitely when the RP2040 is powered on. At the start of each loop, it gets the current date/time and converts it to a string. The wait time allots sufficient time for <code>rtc_get_datetime(&amp;t)</code> to finish executing. Otherwise, a subsequent time-dependent command can exhibit weird behavior.</p>
-<pre><code>rtc_get_datetime(&amp;t);
-datetime_to_str(datetime_str, sizeof(datetime_buf), &amp;t);
-sleep_ms(100);
-</code></pre>
-<p>Next, the serial terminal is read for user input and tokenized for <code>cmd arg1 arg2 arg3</code>. Each of the commands are checked in sequential if-statements. New commands not implemented in <a href="https://people.ece.cornell.edu/land/courses/ece4760/RP2040/C_SDK_memory/SD_card/index_sd_card.html">Bruce Land's</a> version of the SD card setup are described below:</p>
-<p>The <code>setdate</code> command uses <code>arg1</code> and <code>arg2</code> to set the date and time, respectively. The date is tokenized by delimiter <code>-</code> and the time is tokenized by delimiter <code>:</code>. The fields for the <code>datetime_t</code> struct are updated accordingly and reinitialized in the real time clock.</p>
-<p>The <code>setfreq</code> command uses <code>arg1</code> to set the frequency (in ms) for data logging. When the <code>write</code> command is issued, the frequency is used to put the system to sleep in between data logging entries.</p>
-<p>The <code>write</code> command uses <code>arg1</code> as the filename to write to. If the file does not exist, a new one will be created. If the file already exists, new data will be appended to the file. The contents of the file are divided into two sections - header and data. The header includes the Pico ID so that each system can be identified uniquely when many flux chambers are deployed. It also defines each of the columns. At present, the columns are <code>DATETIME,CH4,CO2,TEMP,HUM</code>.</p>
-<p>Then the data is continuously written in a loop. As mentioned previously, the frequency is used to specify the sleep time between data logging entries.</p>
-<p>An example of <code>setdate</code>, <code>setfreq</code>, <code>write</code>, and <code>print</code> used on the serial terminal and the corresponding CSV file is provided below:</p>
-<img alt="Serial Terminal" src="img/serial_terminal.png" width="400"/>
-<img alt="CSV File" src="img/csv_file.png" width="400"/>
 </div>
 </div>
 </div>
@@ -7647,7 +7573,39 @@ sleep_ms(100);
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Debugging-Tips">Debugging Tips<a class="anchor-link" href="#Debugging-Tips">¶</a></h2><p>Power cycling! For any errors initializing the SD card and filesystem, <em>first</em> try power cycling to reset the system. In particular when starting up the system after it has been unused for a while, initialization and mounting errors seem more prevalent, but they usually resolve on their own with multiple power cycles. Other general debug tips include checking all circuit connections are secure and reflashing the RP2040. If the error persists, some other solutions are outlined below:</p>
+<h3 id="Interfacing-with-the-SD-Card">Interfacing with the SD Card<a class="anchor-link" href="#Interfacing-with-the-SD-Card">¶</a></h3><p>The <a href="http://elm-chan.org/fsw/ff/00index_e.html">FatFs</a> library provides many filesystem functions, but only the ones used in this project will be described below.</p>
+<p><b>Write to a file:</b> Open the file and if the file "filename" does not exist, a new file is created. But if the file already exists, the new content will be appended to the bottom of the file. <i>All open files must be closed.</i><br/>
+<code>f_open(&amp;file_struct, "filename", FA_WRITE | FA_OPEN_APPEND)</code><br/>
+<code>f_write(&amp;file_struct, "contents", strlen("contents"), &amp;wr_count)</code>
+<code>f_close(&amp;file_struct)</code></p>
+<p><b>Read from a file:</b> Open the file with read access, then read the contents. <i>All open files must be closed.</i><br/>
+<code>f_open(&amp;file_struct, "filename", FA_READ)</code><br/>
+<code>f_read(&amp;file_struct, buffer, sizeof(buffer), &amp;count)</code><br/>
+<code>f_close(&amp;file_struct)</code></p>
+<p><b>Remove file/directory:</b><br/>
+<code>f_unlink(path)</code></p>
+<p><b>List files in a directory:</b> Open the directory and get the full path of the current working directory. Then read an item of the directory (this last command is looped until all items are read).<br/>
+<code>f_opendir(&amp;directory_struct, directory_name)</code><br/>
+<code>f_getcwd(path, sizeof(path))</code><br/>
+<code>f_readdir(&amp;directory_struct, &amp;file_info_struct)</code></p>
+<p><b>Navigate to a different directory:</b><br/>
+<code>f_chdir(path)</code></p>
+<p><b>Make a new directory:</b><br/>
+<code>f_mkdir(path)</code></p>
+<p>An example of initalizing, mounting, and interfacing with the SD card is provided below:</p>
+<img alt="Serial Terminal" src="img/serial_monitor.png" width="400"/>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Debugging-Tips">Debugging Tips<a class="anchor-link" href="#Debugging-Tips">¶</a></h2><p>At present, both <code>flux_chamber.c</code> and <code>terminal_interface.c</code> can reliably initalize, mount, and interface with the SD card. However during the development phase, many errors arose particularly due to the SD card. Should these problems reappear, here are a few debugging tips that worked for us.</p>
+<p>Check that all devices are grounded! Yes, this includes your laptop being grounded through its charging cord. For any errors initializing the SD card and filesystem, <em>first</em> try power cycling to reset the system - on the order of 20 times. Other general debug tips include checking all circuit connections are secure and reflashing the RP2040. If the error persists, some other solutions are outlined below:</p>
 <p><strong><code>ERROR: Could not initialize SD card</code></strong><br/>
 May need to reformat the SD card (to FAT32) in the case that it has been corrupted.</p>
 <p><strong><code>ERROR: Could not mount filesystem</code></strong><br/>

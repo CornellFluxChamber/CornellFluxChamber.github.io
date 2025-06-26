@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>index</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>CO2</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <style type="text/css">
     pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -7482,7 +7482,35 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Cornell-Flux-Chamber">Cornell Flux Chamber<a class="anchor-link" href="#Cornell-Flux-Chamber">¶</a></h1>
+<h1 id="CO%E2%82%82-Sensor">CO₂ Sensor<a class="anchor-link" href="#CO%E2%82%82-Sensor">¶</a></h1><p><em>Written by Grace Lo &amp; Rachel Yan</em></p>
+<p><em>A previous version describing the python implementation of the sensor can be found <a href="../CO2_v1/CO2_Sensor.html">here</a>.</em></p>
+<p>The CO₂ recording procedure was developed and tested on the <a href="https://sensirion.com/products/catalog/SCD30">Sensirion SCD30</a> CO₂ Sensor Module for measuring carbon dioxide (CO₂) concentration, temperature, and humidity. It is a digital sensor communicating over I²C and is pre-calibrated under controlled environmental conditions. The basic CO₂ sensor functionality, intialization and reading data is borrowed from the Sensirion <a href="https://github.com/Sensirion/embedded-i2c-scd30">embedded-i2c-scd30</a> library. The data is provided in standard units (eg. ppm for CO₂, °C for temperature, and %RH for humidity) with specifications provided below.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sensor</th>
+<th style="text-align:center">Range</th>
+<th style="text-align:center">Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">CO₂</td>
+<td style="text-align:center">0 - 40,000 ppm</td>
+<td style="text-align:center">±30 ppm + 3 %MV</td>
+</tr>
+<tr>
+<td style="text-align:center">Temperature</td>
+<td style="text-align:center">0 - 100 %RH</td>
+<td style="text-align:center">±3 %RH</td>
+</tr>
+<tr>
+<td style="text-align:center">Humidity</td>
+<td style="text-align:center">-40 - 70 °C</td>
+<td style="text-align:center">±(0.4°C + 0.023 × (T [°C] – 25°C))</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -7493,69 +7521,15 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<blockquote>
+<h2 id="Pin-Connections">Pin Connections<a class="anchor-link" href="#Pin-Connections">¶</a></h2><p>Breadboarding best practices should be followed.</p>
+<img alt="Pin Connections" src="img/pin_connections.png" width="400"/>
+<p>Pin connections from the <strong>CO₂ sensor → Pico</strong> are as follows:</p>
 <ul>
-<li><a href="#Project-overview">Project overview</a></li>
-<li><a href="#Code">Code</a></li>
-<li><a href="#Mechanical-design">Mechanical design</a></li>
-<li><a href="#Calibration-and-deployment-instructions">Calibration and deployment instructions</a></li>
-<li><a href="#Resources-and-literature">Resources and literature</a></li>
-</ul>
-</blockquote>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Project-overview">Project overview<a class="anchor-link" href="#Project-overview">¶</a></h2><p>Methane (CH4) emissions are increasing globally. Yet, partitioning different sources of methane emissions remains challenging due to the limited spatial and temporal scale of field measurements. Improving ground measurements of CH4 flux will allow us to identify and quantify how different policy and management actions can reduce emissions. In order to increase ground measurements of CH4 flux, we need affordable, rugged, and portable sensors that can be deployed for days to weeks at a time. This webpage documents the design, construction, and field testing of 10 prototype chambers to measure CH4 and carbon dioxide (CO2) flux from a variety of environments (e.g., manure, wetlands, lakes, agricultural fields). The development of these affordable, portable, rugged, and easy to use chambers will expand ground CH4 flux measurements world-wide, ultimately providing much-needed science to inform carbon policy.</p>
-<p><strong>This webpage is dynamic, and will be updated as the project progresses.</strong></p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All project code lives in <a href="https://github.com/CornellFluxChamber/ChamberCode">this git repository</a>. As we develop libraries for communicating with the various sensors that compose our floating flux chamber, those libraries will be documented on webpages linked below.</p>
-<ul>
-<li><a href="Flux_Chamber/Flux_Chamber.html">Flux chamber</a> $\longrightarrow$ The <strong>main body of code</strong> to run the integrated motor and data logging system.</li>
-<li><a href="CO2_v2/CO2.html">CO2 sensor (+temp, +humidity)</a> $\longrightarrow$ <strong>Selected Sensiron SCD30</strong>. Devices have been procured, students are building an interface library.</li>
-<li><a href="Methane/Methane.html">Methane sensor</a> $\longrightarrow$ <strong>Selected Figaro NGM 2511-E13</strong>. Devices have been procured, students are building an interface library.</li>
-<li><a href="SD_Card/SD_Card.html">SD card</a></li>
-<li><a href="Real_Time_Clock/Real_Time_Clock.html">Real time clock</a></li>
-<li><a href="Stepper_Motor/Stepper_Motor.html">Stepper motors</a></li>
-<li><a href="Terminal_Interface/Terminal_Interface.html">Terminal interface</a> $\longrightarrow$ A debugging interface to test motor and logging settings.</li>
-<li><a href="Testing/Testing.html">Testing</a> $\longrightarrow$ Results of an extended lab test.</li>
+<li>V<sub>IN</sub> → 3V3(OUT) (pin 36)</li>
+<li>GND → GND</li>
+<li>SCL → I2C0_SCL (pin 17)</li>
+<li>SDA → I2C0_SDA (pin 16)</li>
+<li>SEL → floating for selecting I<sup>2</sup>C</li>
 </ul>
 </div>
 </div>
@@ -7567,7 +7541,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All code is in the <a href="https://github.com/CornellFluxChamber/ChamberCode.git">CornellFluxChamber</a> Github repository. The code for interfacing with the CO₂ sensor is incorporated into <code>flux_chamber.c</code>.</p>
 </div>
 </div>
 </div>
@@ -7578,9 +7552,13 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Mechanical-design">Mechanical design<a class="anchor-link" href="#Mechanical-design">¶</a></h2><ul>
-<li><a href="./Mechanical/Mechanical.html">Design considerations</a> $\longrightarrow$ <strong>Agreed upon first variation shown on this page</strong>. Mechanical prototyping underway.</li>
-</ul>
+<h3 id="Includes">Includes<a class="anchor-link" href="#Includes">¶</a></h3><p>The first lines of code in the C source file include header files. <em>Don't forget to link these in the CMakeLists.txt file!</em></p>
+<p>The following files are required to interface with the CO₂ sensor and are provided by the Sensirion <a href="https://github.com/Sensirion/embedded-i2c-scd30">embedded-i2c-scd30</a> library (refer to the parent library for a description about each header file).</p>
+<pre><code>#include &lt;stdio.h&gt;
+#include "scd30_i2c.h"
+#include "sensirion_common.h"
+#include "sensirion_i2c_hal.h"
+</code></pre>
 </div>
 </div>
 </div>
@@ -7591,7 +7569,31 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h3 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h3><p>The C source file initializes the CO₂ sensor's I²C Hardware Abstraction Layer (HAL) and configures the driver with the I²C address of the sensor, which sets up the communication interface between the sensor and the Pico.</p>
+<pre><code>int16_t error = NO_ERROR;
+sensirion_i2c_hal_init();
+init_driver(SCD30_I2C_ADDR_61);
+</code></pre>
+<p>Then it ensures the sensor starts in a clear and ready state by terminating all  previous reading loops, sending a reset signal, and verifying the communication responsiveness of the sensor one last time, before setting up the sensor with the periodic measurement.</p>
+<pre><code>scd30_stop_periodic_measurement();
+scd30_soft_reset();
+sensirion_i2c_hal_sleep_usec(2000000);
+
+uint8_t major = 0;
+uint8_t minor = 0;
+error = scd30_read_firmware_version(&amp;major, &amp;minor);
+if (error != NO_ERROR) {
+    printf("error executing read_firmware_version(): %i\n", error);
+    return error;
+}
+printf("firmware version major: %u minor: %u\n", major, minor);
+
+error = scd30_start_periodic_measurement(0);
+if (error != NO_ERROR) {
+    printf("error executing start_periodic_measurement(): %i\n", error);
+    return error;
+}
+</code></pre>
 </div>
 </div>
 </div>
@@ -7602,11 +7604,9 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Electrical-design">Electrical design<a class="anchor-link" href="#Electrical-design">¶</a></h2><p>Will include documentation of schematic, layout, etc.</p>
-<ul>
-<li><a href="https://docs.google.com/spreadsheets/d/1rdSiY21HsB15AhayNILNWM_bd6uwlbhkO6BxMMC41wQ/edit?gid=0#gid=0">Sensor trade study</a></li>
-<li><a href="./Sensors/Options.pdf">Overview of sensor options, for discussion with colleagues</a></li>
-</ul>
+<h3 id="Read">Read<a class="anchor-link" href="#Read">¶</a></h3><p>The CO₂ sensor module is read using <code>scd30_blocking_read_measurement_data(&amp;co2,&amp;temp, &amp;hum)</code> and directly written to the file.</p>
+<p>An example of the data logging to a CSV file is provided below:</p>
+<img alt="CSV File" src="img/csv_file.png" width="400"/>
 </div>
 </div>
 </div>
@@ -7617,63 +7617,9 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Calibration-and-deployment-instructions">Calibration and deployment instructions<a class="anchor-link" href="#Calibration-and-deployment-instructions">¶</a></h2><p>To be populated.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Resources-and-literature">Resources and literature<a class="anchor-link" href="#Resources-and-literature">¶</a></h2><ul>
-<li><a href="./Literature/Proposal.pdf">The proposal for this project, which describes our objectives</a></li>
-<li><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024JG008035">Self-Made Equipment for Automatic Methane Diffusion and Ebullition Measurements From Aquatic Environments</a></li>
-<li>[Technical note: Facilitating the use of low-cost methane (CH4)</li>
-</ul>
-<p>sensors in flux chambers – calibration, data processing, and
-an open-source make-it-yourself logger](<a href="https://bg.copernicus.org/articles/17/3659/2020/">https://bg.copernicus.org/articles/17/3659/2020/</a>)</p>
-<ul>
-<li><a href="https://www.sciencedirect.com/science/article/pii/S0048969723015115?via%3Dihub">Methane and carbon dioxide fluxes at high spatiotemporal resolution from a small temperate lake</a></li>
-<li><a href="https://github.com/JonasStage/Methane-and-CO2-sensor/tree/main">Jonas Stage git repo</a></li>
-<li><a href="./Literature/Building_J_Sensors.pdf">Building J-Sensors</a></li>
-<li><a href="./Literature/Calibrating_J_Sensors.pdf">Calibrating J-Sensors</a></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h3 id="Sensor-Testing">Sensor Testing<a class="anchor-link" href="#Sensor-Testing">¶</a></h3><p>The CO₂ sensor was tested by manipulating CO₂ concentrations, temperature, and humidity through a series of covering the sensor with a hand and blowing on it. Current lab testing has shown CO₂ readings ranging from approximately 300 ppm to over 6000 ppm, temperature ranging from 24-28 °C, and 45-70% relative humidity.</p>
+<p>The example provided below shows a series of data measurements, 5 seconds apart, while altering the sensor's immediate environmental conditions.</p>
+<img alt="Sensor Testing" src="img/sensor_testing.png" width="572"/>
 </div>
 </div>
 </div>

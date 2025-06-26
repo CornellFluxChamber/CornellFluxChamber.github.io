@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>index</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>Terminal_Interface</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <style type="text/css">
     pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -7482,7 +7482,9 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Cornell-Flux-Chamber">Cornell Flux Chamber<a class="anchor-link" href="#Cornell-Flux-Chamber">¶</a></h1>
+<h1 id="Terminal-Interface">Terminal Interface<a class="anchor-link" href="#Terminal-Interface">¶</a></h1><p><em>Written by Grace Lo &amp; Alina Wang</em></p>
+<p>This integrated terminal interface system combines SD card functionality with motor testing and CO₂ and methane sensor measurements, displayed on a serial monitor mimicking your computer's terminal or PowerShell command-line interface. It has a series of valid commands to navigate and alter files/directories on the SD card, as well as change the motor or data logging settings of the system. Like the <a href="../Flux_Chamber/Flux_Chamber.ipynb"><code>flux_chamber.c</code></a> system, it can also collect environmental data from both the <a href="https://sensirion.com/products/catalog/SCD30">Sensirion SCD30</a> (CO₂, temperature, humidity) and the <a href="https://www.figarosensor.com/product/entry/ngm2611.html">Figaro NGM2611-E13</a> (methane), and write this data with timestamps to a <code>.csv</code> file.</p>
+<p>All base motor, SD card and sensor functionality is handled by their respective libraries,  documented on the <a href="../Stepper_Motor/Stepper_Motor.html">Stepper Motor</a>, <a href="../CO2/CO2.html">CO₂ Sensor</a>, <a href="../Methane/Methane.html">Methane Sensor</a> and <a href="../SD_Card/SD_Card.html">SD Card</a> pages. The intent of this document is to show how these modules are integrated with a command-line interface for testing specific setting changes without the need to compile the code and reflash the Pico. <em>As such, this page will often refer to <a href="../Flux_Chamber/Flux_Chamber.html">Flux Chamber</a> for various steps and mainly highlight the differences.</em></p>
 </div>
 </div>
 </div>
@@ -7493,69 +7495,36 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<blockquote>
+<h2 id="Pin-Connections">Pin Connections<a class="anchor-link" href="#Pin-Connections">¶</a></h2><p>Breadboarding best practices should be followed. Use the shortest possible wires for maximum clock speed, which when using solderless protoboards is capped at ~20MHz due to pin capacitance. The pin connection for each components is already documented on their respective pages and the integrated version simply connects all the components together.</p>
+<img alt="Pin Connections" src="img/pin_connections.png" width="800"/>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="API">API<a class="anchor-link" href="#API">¶</a></h2><p>The serial monitor can be connected using the <a href="https://www.raspberrypi.com/products/debug-probe/">Raspberry Pi Debug Probe</a> or the <a href="https://www.adafruit.com/product/954">Adafruit #954</a> USB to TTL Serial cable, both of which can be connected via:</p>
 <ul>
-<li><a href="#Project-overview">Project overview</a></li>
-<li><a href="#Code">Code</a></li>
-<li><a href="#Mechanical-design">Mechanical design</a></li>
-<li><a href="#Calibration-and-deployment-instructions">Calibration and deployment instructions</a></li>
-<li><a href="#Resources-and-literature">Resources and literature</a></li>
+<li>RX → UART0_TX (gpio 0)</li>
+<li>TX → UART0_RX (gpio 1)</li>
+<li>GND → GND</li>
 </ul>
-</blockquote>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Project-overview">Project overview<a class="anchor-link" href="#Project-overview">¶</a></h2><p>Methane (CH4) emissions are increasing globally. Yet, partitioning different sources of methane emissions remains challenging due to the limited spatial and temporal scale of field measurements. Improving ground measurements of CH4 flux will allow us to identify and quantify how different policy and management actions can reduce emissions. In order to increase ground measurements of CH4 flux, we need affordable, rugged, and portable sensors that can be deployed for days to weeks at a time. This webpage documents the design, construction, and field testing of 10 prototype chambers to measure CH4 and carbon dioxide (CO2) flux from a variety of environments (e.g., manure, wetlands, lakes, agricultural fields). The development of these affordable, portable, rugged, and easy to use chambers will expand ground CH4 flux measurements world-wide, ultimately providing much-needed science to inform carbon policy.</p>
-<p><strong>This webpage is dynamic, and will be updated as the project progresses.</strong></p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All project code lives in <a href="https://github.com/CornellFluxChamber/ChamberCode">this git repository</a>. As we develop libraries for communicating with the various sensors that compose our floating flux chamber, those libraries will be documented on webpages linked below.</p>
+<p>When the system resets, the driver prints SD card information to the serial terminal. Then you can issue the following commands:</p>
 <ul>
-<li><a href="Flux_Chamber/Flux_Chamber.html">Flux chamber</a> $\longrightarrow$ The <strong>main body of code</strong> to run the integrated motor and data logging system.</li>
-<li><a href="CO2_v2/CO2.html">CO2 sensor (+temp, +humidity)</a> $\longrightarrow$ <strong>Selected Sensiron SCD30</strong>. Devices have been procured, students are building an interface library.</li>
-<li><a href="Methane/Methane.html">Methane sensor</a> $\longrightarrow$ <strong>Selected Figaro NGM 2511-E13</strong>. Devices have been procured, students are building an interface library.</li>
-<li><a href="SD_Card/SD_Card.html">SD card</a></li>
-<li><a href="Real_Time_Clock/Real_Time_Clock.html">Real time clock</a></li>
-<li><a href="Stepper_Motor/Stepper_Motor.html">Stepper motors</a></li>
-<li><a href="Terminal_Interface/Terminal_Interface.html">Terminal interface</a> $\longrightarrow$ A debugging interface to test motor and logging settings.</li>
-<li><a href="Testing/Testing.html">Testing</a> $\longrightarrow$ Results of an extended lab test.</li>
+<li><code>runmotor &lt;direction&gt; &lt;steps&gt;</code>: run the motor up/down for a certain number of steps</li>
+<li><code>setdate &lt;yyyy-mm-dd&gt; &lt;hh:mm:ss&gt;</code>: set the RTC intialization of date/time</li>
+<li><code>setper &lt;period&gt;</code>: set the data logging period in ms (default set to 5 seconds)</li>
+<li><code>write &lt;filename&gt;</code>: write data logging to a file</li>
+<li><code>print &lt;filename&gt;</code>: print the content of the filename</li>
+<li><code>rm &lt;filename&gt;</code>: delinks (deletes) a file</li>
+<li><code>ls &lt;directory&gt;</code>: lists directory contents; default is current directory</li>
+<li><code>cd &lt;directory&gt;</code>: changes current directory</li>
+<li><code>mkdir &lt;directory&gt;</code>: new directory</li>
+<li><code>help</code>: prints all valid commands</li>
 </ul>
 </div>
 </div>
@@ -7567,7 +7536,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All code is in the <a href="https://github.com/CornellFluxChamber/ChamberCode.git">CornellFluxChamber</a> Github repository. The file <code>terminal_interface.c</code> contains all core logic for sensor initialization, data logging, and command-line interactions. The code is organized in protothreads for modularity. Protothreads are extremely lightweight, stackless threads designed for memory-constrained systems; the library is written entirely as C macros by <a href="http://dunkels.com/adam/pt/publications.html">Adam Dunkels</a>.</p>
 </div>
 </div>
 </div>
@@ -7578,9 +7547,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Mechanical-design">Mechanical design<a class="anchor-link" href="#Mechanical-design">¶</a></h2><ul>
-<li><a href="./Mechanical/Mechanical.html">Design considerations</a> $\longrightarrow$ <strong>Agreed upon first variation shown on this page</strong>. Mechanical prototyping underway.</li>
-</ul>
+<h3 id="Includes">Includes<a class="anchor-link" href="#Includes">¶</a></h3><p>The first lines of code in the C source file include header files. <em>Don't forget to link these in the CMakeLists.txt file!</em> All of the header files are the same as <a href="../Flux_Chamber/Flux_Chamber.html"><code>flux_chamber.c</code></a>, except for the <code>pico/sleep.h</code> library that is not necessary for this implementation.</p>
 </div>
 </div>
 </div>
@@ -7591,7 +7558,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h3 id="main()"><code>main()</code><a class="anchor-link" href="#main()">¶</a></h3><p>Refer to <a href="../Flux_Chamber/Flux_Chamber.html"><code>flux_chamber.c</code></a> for the core allocation and protohread setup prcoedures.</p>
 </div>
 </div>
 </div>
@@ -7602,11 +7569,8 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Electrical-design">Electrical design<a class="anchor-link" href="#Electrical-design">¶</a></h2><p>Will include documentation of schematic, layout, etc.</p>
-<ul>
-<li><a href="https://docs.google.com/spreadsheets/d/1rdSiY21HsB15AhayNILNWM_bd6uwlbhkO6BxMMC41wQ/edit?gid=0#gid=0">Sensor trade study</a></li>
-<li><a href="./Sensors/Options.pdf">Overview of sensor options, for discussion with colleagues</a></li>
-</ul>
+<h3 id="Protothread">Protothread<a class="anchor-link" href="#Protothread">¶</a></h3><h4 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h4><p>The protothread begins with variable declarations for processing serial input (<code>cmd</code>, <code>arg1</code>, <code>arg2</code>, <code>arg3</code>, <code>token</code>), date/time (<code>datetime_buf</code>, <code>datetime_str</code>), and frequency (<code>logging_frequency_ms</code>). In addition, the <code>datetime_t</code> struct is initialized to a default Sunday 01 January 00:00:00 2000 and the logging frequency is initialized to a default 5000 ms (or 5 seconds).</p>
+<p>Then the SD card, CO₂ sensor, and ADC for the methane sensor are initialized in the same way as <a href="../Flux_Chamber/Flux_Chamber.html"><code>flux_chamber.c</code></a>.</p>
 </div>
 </div>
 </div>
@@ -7617,63 +7581,21 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Calibration-and-deployment-instructions">Calibration and deployment instructions<a class="anchor-link" href="#Calibration-and-deployment-instructions">¶</a></h2><p>To be populated.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Resources-and-literature">Resources and literature<a class="anchor-link" href="#Resources-and-literature">¶</a></h2><ul>
-<li><a href="./Literature/Proposal.pdf">The proposal for this project, which describes our objectives</a></li>
-<li><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024JG008035">Self-Made Equipment for Automatic Methane Diffusion and Ebullition Measurements From Aquatic Environments</a></li>
-<li>[Technical note: Facilitating the use of low-cost methane (CH4)</li>
-</ul>
-<p>sensors in flux chambers – calibration, data processing, and
-an open-source make-it-yourself logger](<a href="https://bg.copernicus.org/articles/17/3659/2020/">https://bg.copernicus.org/articles/17/3659/2020/</a>)</p>
-<ul>
-<li><a href="https://www.sciencedirect.com/science/article/pii/S0048969723015115?via%3Dihub">Methane and carbon dioxide fluxes at high spatiotemporal resolution from a small temperate lake</a></li>
-<li><a href="https://github.com/JonasStage/Methane-and-CO2-sensor/tree/main">Jonas Stage git repo</a></li>
-<li><a href="./Literature/Building_J_Sensors.pdf">Building J-Sensors</a></li>
-<li><a href="./Literature/Calibrating_J_Sensors.pdf">Calibrating J-Sensors</a></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
+<h4 id="Serial-Terminal">Serial Terminal<a class="anchor-link" href="#Serial-Terminal">¶</a></h4><p>The serial terminal runs indefinitely when the RP2040 is powered on. At the start of each loop, it gets the current date/time and converts it to a string.</p>
+<pre><code>rtc_get_datetime(&amp;t);
+datetime_to_str(datetime_str, sizeof(datetime_buf), &amp;t);
+</code></pre>
+<p>Next, the serial terminal is read for user input and tokenized for <code>cmd arg1 arg2 arg3</code>. Each of the commands are checked in sequential if-statements and are described below:</p>
+<p>The <code>setdate</code> command uses <code>arg1</code> and <code>arg2</code> to set the date and time, respectively. The date is tokenized by delimiter <code>-</code> and the time is tokenized by delimiter <code>:</code>. The fields for the <code>datetime_t</code> struct are updated accordingly and reinitialized in the real time clock.</p>
+<p>The <code>setper</code> command uses <code>arg1</code> to set the period (in ms) for data logging. When the <code>write</code> command is issued, the period is used to put the system to sleep in between data logging entries.</p>
+<p>The <code>write</code> command uses <code>arg1</code> as the filename to write to. If the file does not exist, a new one will be created. If the file already exists, new data will be appended to the file. The contents of the file are divided into two sections - header and data. The header includes the Pico ID so that each system can be identified uniquely when many flux chambers are deployed. It also defines each of the columns. At present, the columns are <code>DATETIME, TEMP, HUM, CO2, CH4</code>. Then the data is continuously written in a loop. As mentioned previously, the logging period is used to specify the sleep time between data logging entries.</p>
+<p>The <code>rm</code> command uses <code>arg1</code> to define the file path for removing the file.</p>
+<p>The <code>ls</code> command can be used with or without <code>arg1</code>. <code>ls</code> alone will print all items in the current directory and <code>ls arg1</code> will print all items in the <code>arg1</code> directory.</p>
+<p>The <code>cd</code> command uses <code>arg1</code> to define the file path to navigate to.</p>
+<p>The <code>mkdir</code> command uses <code>arg1</code> to name the new directory that will be created in the current directory.</p>
+<p>An example of <code>setdate</code>, <code>setfreq</code>, <code>write</code>, and <code>print</code> used in the serial terminal and the corresponding CSV file is provided below:</p>
+<img alt="Serial Terminal" src="img/serial_monitor.png" width="400"/>
+<img alt="CSV File" src="img/csv_file.png" width="400"/>
 </div>
 </div>
 </div>
