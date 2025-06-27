@@ -7541,16 +7541,10 @@ datetime_t t = {
     .year = 2000,
     .month = 01,
     .day = 01,
-    .dotw = 0, // 0 is Sunday, so 5 is Friday
     .hour = 00,
     .min = 00,
     .sec = 00};
 rtc_set_datetime(&amp;t);
-</code></pre>
-<p>A <a href="https://www.geeksforgeeks.org/dsa/find-day-of-the-week-for-a-given-date/">day-of-the-week calculation</a> is included to streamline the initial definition process.</p>
-<pre><code>int calc_info[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
-int calc_year = year - (month &lt; 3);
-int dotw = (calc_year + calc_year / 4 - calc_year / 100 + calc_year / 400 + calc_info[month - 1] + day) % 7;
 </code></pre>
 </div>
 </div>
@@ -7562,10 +7556,13 @@ int dotw = (calc_year + calc_year / 4 - calc_year / 100 + calc_year / 400 + calc
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Read">Read<a class="anchor-link" href="#Read">¶</a></h3><p>At the start of each data logging loop, the current date/time is read and converted to a string.</p>
+<h3 id="Read">Read<a class="anchor-link" href="#Read">¶</a></h3><p>At the start of each data logging loop, the current date/time is read and converted to an Excel-compatible string.</p>
 <pre><code>rtc_get_datetime(&amp;t);
-datetime_to_str(datetime_str, sizeof(datetime_buf), &amp;t);
+char datetime_str[20] = {0};
+snprintf(datetime_str, sizeof(datetime_str), "%02d/%02d/%02d %02d:%02d:%02d", t.month, t.day, t.year % 100, t.hour, t.min, t.sec);
 </code></pre>
+<p>Note that when first opening the .csv file, the date/time cells may show up as ##### (shown below). Simply expand the 1st column to see the text.</p>
+<img alt="CSV File" src="img/csv_file.png" width="400"/>
 </div>
 </div>
 </div>

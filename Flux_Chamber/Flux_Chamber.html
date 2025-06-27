@@ -7602,20 +7602,13 @@ multicore_launch_core1(&amp;core1_main);
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h3 id="Protothread">Protothread<a class="anchor-link" href="#Protothread">¶</a></h3><h4 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h4><p>The protothread begins with variable declarations for the sensor values (<code>co2</code>, <code>temp</code>,<code>hum</code>) and date/time (<code>datetime_buf</code>, <code>datetime_str</code>).</p>
-<p>The next step is the hardware intializations, the code starts with calculating the day-of-the-week (dotw) based on a given date, then initializing the Real Time Clock.</p>
-<pre><code>// For day of the week calculation
-int calc_info[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
-int calc_year = year - (month &lt; 3);
-int dotw = (calc_year + calc_year / 4 - calc_year / 100 + calc_year / 400 + 
-    calc_info[month - 1] + day) % 7;
-
-// Initialize date &amp; time
+<p>The next step is the hardware intializations, starting with the Real Time Clock.</p>
+<pre><code>// Initialize date &amp; time
 rtc_init();
 datetime_t t = {
     .year = year,
     .month = month,
     .day = day,
-    .dotw = dotw, // 0 is Sunday, so 5 is Friday
     .hour = hour,
     .min = min,
     .sec = sec};
@@ -7756,9 +7749,14 @@ else
     {
         first = false; 
 
+        // Write UTF-8 BOM (for excel to interpret special characters)
+        BYTE bom[] = {0xEF, 0xBB, 0xBF};
+        f_write(&amp;f_dst, bom, sizeof(bom), &amp;wr_count);
+
         // Write pico id
         pico_get_unique_board_id(&amp;PICO_ID);
-        char id_str[PICO_UNIQUE_BOARD_ID_SIZE_BYTES * 2]; // Buffer for hexadecimal string
+        // Buffer for hexadecimal string
+        char id_str[PICO_UNIQUE_BOARD_ID_SIZE_BYTES * 2]; 
         for (int i = 0; i &lt; PICO_UNIQUE_BOARD_ID_SIZE_BYTES; i++)
         {
             // Append each byte in hexadecimal format to the buffer
@@ -7766,16 +7764,17 @@ else
         }
         printf("ID is: %s \n", id_str);
         f_write(&amp;f_dst, "Pico ID,", strlen("Pico ID,"), &amp;wr_count);
-        f_write(&amp;f_dst, id_str, strlen(id_str), &amp;wr_count); // Write the ID string to the file
+        f_write(&amp;f_dst, id_str, strlen(id_str), &amp;wr_count);
         f_write(&amp;f_dst, NEW_LINE, strlen(NEW_LINE), &amp;wr_count);
 
         // Write header
-        char *DATA_HEADER = "DATETIME,TEMP,HUM,CO2,CH4\n";
+        const char *DATA_HEADER = "DATETIME,TEMP (°C),HUM (%RH),CO2 (ppm),CH4\n";
         f_write(&amp;f_dst, DATA_HEADER, strlen(DATA_HEADER), &amp;wr_count);
     }
 }
 </code></pre>
 <p>There will be <code>num_of_measurements</code> of data each logging cycle, and it sleeps every <code>logging_period_ms</code> in between each entry. Each log entry retrieves and writes the date/time, the data from the CO₂ and methane sensor, and creates a new line after the current log is completed.</p>
+<p>The date/time column has been updated to produce an Excel-compatible format. As such, it now opens and displays as #####, requiring the 1st column to be expanded to show the text.</p>
 <p>An example of the terminal output (when debugging mode is on) and the corresponding CSV file is provided below:</p>
 <img alt="Serial Terminal" src="img/serial_monitor.png" width="700"/>
 <img alt="CSV File" src="img/csv_file.png" width="400"/>
