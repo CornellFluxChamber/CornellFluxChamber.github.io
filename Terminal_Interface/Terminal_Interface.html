@@ -7515,9 +7515,9 @@ a.anchor-link {
 </ul>
 <p>When the system resets, the driver prints SD card information to the serial terminal. Then you can issue the following commands:</p>
 <ul>
-<li><code>runmotor &lt;direction&gt; &lt;steps&gt;</code>: run the motor up/down for a certain number of steps</li>
-<li><code>setdate &lt;yyyy-mm-dd&gt; &lt;hh:mm:ss&gt;</code>: set the RTC intialization of date/time</li>
-<li><code>setper &lt;period&gt;</code>: set the data logging period in ms (default set to 5 seconds)</li>
+<li><code>test_motor &lt;direction&gt;</code>: run the motor up/down &amp; stop it using the corresponding feedback switch</li>
+<li><code>set_date &lt;yyyy-mm-dd&gt; &lt;hh:mm:ss&gt;</code>: set the RTC intialization of date/time</li>
+<li><code>set_per &lt;period&gt;</code>: set the data logging period in ms (default set to 5 seconds)</li>
 <li><code>write &lt;filename&gt;</code>: write data logging to a file</li>
 <li><code>print &lt;filename&gt;</code>: print the content of the filename</li>
 <li><code>rm &lt;filename&gt;</code>: delinks (deletes) a file</li>
@@ -7547,7 +7547,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Includes">Includes<a class="anchor-link" href="#Includes">¶</a></h3><p>The first lines of code in the C source file include header files. <em>Don't forget to link these in the CMakeLists.txt file!</em> All of the header files are the same as <a href="../Flux_Chamber/Flux_Chamber.html"><code>flux_chamber.c</code></a>, except for the <code>pico/sleep.h</code> library that is not necessary for this implementation.</p>
+<h3 id="Header-Files">Header Files<a class="anchor-link" href="#Header-Files">¶</a></h3><p>The first lines of code in the C source file include header files. <em>Don't forget to link these in the CMakeLists.txt file!</em> All of the header files are the same as <a href="../Flux_Chamber/Flux_Chamber.html"><code>flux_chamber.c</code></a>, except for the <code>pico/sleep.h</code> library that is not necessary for this implementation.</p>
 </div>
 </div>
 </div>
@@ -7582,16 +7582,16 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h4 id="Serial-Terminal">Serial Terminal<a class="anchor-link" href="#Serial-Terminal">¶</a></h4><p>The serial terminal runs indefinitely when the RP2040 is powered on. At the start of each loop, it waits for user input, then tokenizes <code>cmd arg1 arg2 arg3</code>. Each of the commands are checked in sequential if-statements and are described below:</p>
-<p>The <code>setdate</code> command uses <code>arg1</code> and <code>arg2</code> to set the date and time, respectively. The date is tokenized by delimiter <code>-</code> and the time is tokenized by delimiter <code>:</code>. The fields for the <code>datetime_t</code> struct are updated accordingly and reinitialized in the real time clock.</p>
-<p>The <code>setper</code> command uses <code>arg1</code> to set the period (in ms) for data logging. When the <code>write</code> command is issued, the period is used to put the system to sleep in between data logging entries.</p>
+<p>The <code>test_motor</code> command uses <code>arg1</code> to determine the direction to run the motor and the proper switch to test for. When the motor moves up, it uses the limit switch to stop. When the motor moves down, it uses the float switch to stop.</p>
+<p>The <code>set_date</code> command uses <code>arg1</code> and <code>arg2</code> to set the date and time, respectively. The date is tokenized by delimiter <code>-</code> and the time is tokenized by delimiter <code>:</code>. The fields for the <code>datetime_t</code> struct are updated accordingly and reinitialized in the real time clock.</p>
+<p>The <code>set_per</code> command uses <code>arg1</code> to set the period (in ms) for data logging. When the <code>write</code> command is issued, the period is used to put the system to sleep in between data logging entries.</p>
 <p>The <code>write</code> command uses <code>arg1</code> as the filename to write to. If the file does not exist, a new one will be created. If the file already exists, new data will be appended to the file. The contents of the file are divided into two sections - header and data. The header includes the Pico ID so that each system can be identified uniquely when many flux chambers are deployed. It also defines each of the columns. At present, the columns are <code>DATETIME, TEMP, HUM, CO2, CH4</code>. Then the data is continuously written in a loop. As mentioned previously, the logging period is used to specify the sleep time between data logging entries.</p>
 <p>The <code>rm</code> command uses <code>arg1</code> to define the file path for removing the file.</p>
 <p>The <code>ls</code> command can be used with or without <code>arg1</code>. <code>ls</code> alone will print all items in the current directory and <code>ls arg1</code> will print all items in the <code>arg1</code> directory.</p>
 <p>The <code>cd</code> command uses <code>arg1</code> to define the file path to navigate to.</p>
 <p>The <code>mkdir</code> command uses <code>arg1</code> to name the new directory that will be created in the current directory.</p>
 <p>An example of <code>setdate</code>, <code>setfreq</code>, <code>write</code>, and <code>print</code> used in the serial terminal and the corresponding CSV file is provided below:</p>
-<img alt="Serial Terminal" src="img/serial_monitor.png" width="400"/>
-<img alt="CSV File" src="img/csv_file.png" width="400"/>
+<p><img alt="Serial Terminal" src="img/serial_monitor.png" width="400"/> <img alt="CSV File" src="img/csv_file.png" width="400"/></p>
 </div>
 </div>
 </div>

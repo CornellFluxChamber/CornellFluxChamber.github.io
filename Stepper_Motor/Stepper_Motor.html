@@ -7483,7 +7483,7 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Stepper-Motor">Stepper Motor<a class="anchor-link" href="#Stepper-Motor">¶</a></h1><p><em>Written by Grace Lo, Rachel Yan, &amp; Henry Sigel</em></p>
-<p>The 12V rated <a href="https://www.adafruit.com/product/324">NEMA-17</a> Stepper Motor is used to control the mechanical design of the flux chamber by opening and closing the chamber. It uses <a href="https://www.adafruit.com/product/6121?srsltid=AfmBOooewzKw0BhmeOOv3fSTSSEoolT53hRkdlx3yQKAozX7bzYRfrfr">Adafruit's TMC2209</a> Stepper Motor Driver Breakout Board to control the direction, step, and current flow. The current flow is used for the motor's holding torque and without it, the motor's position can shift . But since it is attached to a threaded metal rod, the change is negligible. Therefore, when the motor is not in use, the current flow is disabled to reduce power consumption and prevent the motor from overheating.</p>
+<p>Inspired by the quick vertical motion of a 3D printer build plate, a <a href="https://www.prusa3d.com/product/stepper-motor-z-axis-left-mk3-s-mk2-5-s-mk2-s/">Stepper Motor with Integrated T8 Lead Screw</a> is used to control the mechanical design of the flux chamber by opening and closing the chamber. It can be purchased as a spare part for Prusa 3D printers, although similar models can be found from 3rd party 3D printer parts vendors or Amazon. It uses <a href="https://www.adafruit.com/product/6121?srsltid=AfmBOooewzKw0BhmeOOv3fSTSSEoolT53hRkdlx3yQKAozX7bzYRfrfr">Adafruit's TMC2209</a> Stepper Motor Driver Breakout Board to control the direction, step, and current flow. The current flow is used for the motor's holding torque and without it, the motor's position can shift. But since it is attached to a threaded metal rod with a self-locking nut, the change is negligible. Therefore, when the motor is not in use, the current flow is disabled to reduce power consumption and prevent the motor from overheating.</p>
 </div>
 </div>
 </div>
@@ -7494,8 +7494,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Pin-Connections">Pin Connections<a class="anchor-link" href="#Pin-Connections">¶</a></h2><p>Breadboarding best practices should be followed.</p>
-<img alt="Pin Connections" src="img/pin_connections.png" width="400"/>
+<h2 id="Pin-Connections">Pin Connections<a class="anchor-link" href="#Pin-Connections">¶</a></h2><img alt="Pin Connections" src="img/pin_connections.png" width="400"/>
 <p>Pin connections from the <strong>motor driver → Pico</strong> are as follows:</p>
 <ul>
 <li>VDD → 3V3(OUT) (pin 36)</li>
@@ -7504,12 +7503,15 @@ a.anchor-link {
 <li>STEP → GPIO 17 (pin 22)</li>
 <li>EN → GPIO 18 (pin 24)</li>
 </ul>
-<p>And on the terminal block:</p>
+<p>And on the <strong>terminal block</strong>:</p>
 <ul>
 <li>⊕ → motor input voltage (12V)</li>
 <li>⊖ → GND</li>
-<li>1A/B → red/yellow</li>
-<li>2A/B → green/gray</li>
+<li>For 1A/B and 2A/B, check the motor's datasheet for the 2 pairs of leads by inductor and their corresponding wire color. In this case, A &amp; C are paired together and B &amp; D.<ul>
+<li><img alt="Motor Wiring Diagram" src="img/motor_wiring_diagram.png" width="150"/>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -7566,18 +7568,16 @@ gpio_put(18, 1);            // disable motor when not in use
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Running-the-Motor">Running the Motor<a class="anchor-link" href="#Running-the-Motor">¶</a></h3><p>The motor code is wrapped in a <code>move_motor</code> function that takes in arguments for the direction and number of steps the motor should take, on the order of thousands. It first enables current to the motor and defines the direction (0 for clockwise/up, 1 for counterclockwise/down). Then, the STEP pin is toggled for the amount of <code>steps</code> defined, which visibly is the length of time for the motor movement. Note that the for loop keeps toggling the STEP pin because the stepper motor is triggered by rising edges, so one toggle means one step. The <code>sleep_us(1000)</code> delay between toggles ensures the motor driver has sufficient response time for each step, which in this case is the maximum frequency of 1/1000us.</p>
+<h3 id="Running-the-Motor">Running the Motor<a class="anchor-link" href="#Running-the-Motor">¶</a></h3><p>The motor code is wrapped in a <code>move_motor</code> function that takes in arguments for the direction and number of steps the motor should take, on the order of thousands. For demonstration purposes, the motor is run for the defined number of steps. However, it can be changed to run until a sensor sends a signal for it to stop (this configuration is used in the final flux chamber design). The function first enables current to the motor and defines the direction (0 for clockwise/up, 1 for counterclockwise/down). Then, the STEP pin is toggled for the amount of steps defined, which visibly is the length of time for the motor movement. Note that the for-loop keeps toggling the STEP pin because the stepper motor is triggered by rising edges, so one toggle means one step. The <code>sleep_us(300)</code> delay between toggles ensures the motor driver has sufficient response time for each step, which in this case is a stable frequency of 3333 Hz. <em>This sleep time is subject to change depending on the motor model!</em> For our current motor, the frequency can reach as high as 10 kHz, but it presents greater vibrations deemed unstable for our system. In comparison, the standard NEMA 17 stepper motor can only reach a frequency of 1 kHz.</p>
 <pre><code>// Function to move motor - 0 is cw up, 1 is ccw down
-void move_motor(int direction, int steps)
-{
+void move_motor(int direction, int steps) {
     gpio_put(18, 0);            // enable motor
     gpio_put(16, direction);
-    for (int i = 0; i &lt; steps; i++)
-    {
+    for (int i = 0; i &lt; steps; i++) {
         gpio_put(17, true);
-        sleep_us(1000);
+        sleep_us(300);
         gpio_put(17, false);
-        sleep_us(1000);
+        sleep_us(300);
     }
     gpio_put(18, 1);            // disable motor
 }

@@ -7496,8 +7496,8 @@ a.anchor-link {
 <blockquote>
 <ul>
 <li><a href="#Project-overview">Project overview</a></li>
-<li><a href="#Code">Code</a></li>
 <li><a href="#Mechanical-design">Mechanical design</a></li>
+<li><a href="#Electrical-design">Electrical design</a></li>
 <li><a href="#Calibration-and-deployment-instructions">Calibration and deployment instructions</a></li>
 <li><a href="#Resources-and-literature">Resources and literature</a></li>
 </ul>
@@ -7546,40 +7546,9 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All project code lives in <a href="https://github.com/CornellFluxChamber/ChamberCode">this git repository</a>. As we develop libraries for communicating with the various sensors that compose our floating flux chamber, those libraries will be documented on webpages linked below.</p>
-<ul>
-<li><a href="Flux_Chamber/Flux_Chamber.html">Flux chamber</a> $\longrightarrow$ The <strong>main body of code</strong> to run the integrated motor and data logging system.</li>
-<li><a href="CO2_v2/CO2.html">CO2 sensor (+temp, +humidity)</a> $\longrightarrow$ <strong>Selected Sensiron SCD30</strong>. Devices have been procured, students are building an interface library.</li>
-<li><a href="Methane/Methane.html">Methane sensor</a> $\longrightarrow$ <strong>Selected Figaro NGM 2511-E13</strong>. Devices have been procured, students are building an interface library.</li>
-<li><a href="SD_Card/SD_Card.html">SD card</a></li>
-<li><a href="Real_Time_Clock/Real_Time_Clock.html">Real time clock</a></li>
-<li><a href="Stepper_Motor/Stepper_Motor.html">Stepper motors</a></li>
-<li><a href="Terminal_Interface/Terminal_Interface.html">Terminal interface</a> $\longrightarrow$ A debugging interface to test motor and logging settings.</li>
-<li><a href="Testing/Testing.html">Testing</a> $\longrightarrow$ Results of an extended lab test.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h2 id="Mechanical-design">Mechanical design<a class="anchor-link" href="#Mechanical-design">¶</a></h2><ul>
-<li><a href="./Mechanical/Mechanical.html">Design considerations</a> $\longrightarrow$ <strong>Agreed upon first variation shown on this page</strong>. Mechanical prototyping underway.</li>
+<li><a href="./Mechanical/Mechanical.html">Design considerations</a> $\longrightarrow$ Agreed upon first variation shown on this page.</li>
+<li><a href="./Chamber_Design/Chamber_Design.html">Chamber design</a> $\longrightarrow$ Current mechanical prototype.</li>
 </ul>
 </div>
 </div>
@@ -7602,10 +7571,26 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Electrical-design">Electrical design<a class="anchor-link" href="#Electrical-design">¶</a></h2><p>Will include documentation of schematic, layout, etc.</p>
+<h2 id="Electrical-design">Electrical design<a class="anchor-link" href="#Electrical-design">¶</a></h2><p>Sensor considerations</p>
 <ul>
 <li><a href="https://docs.google.com/spreadsheets/d/1rdSiY21HsB15AhayNILNWM_bd6uwlbhkO6BxMMC41wQ/edit?gid=0#gid=0">Sensor trade study</a></li>
 <li><a href="./Sensors/Options.pdf">Overview of sensor options, for discussion with colleagues</a></li>
+</ul>
+<p>As we develop libraries for communicating with the various sensors and components that compose our floating flux chamber, those libraries, schematic, layout, etc. will be documented on webpages linked below. All project code lives in <a href="https://github.com/CornellFluxChamber/ChamberCode">this git repository</a>.</p>
+<ul>
+<li><a href="./Methane/Methane.html">Methane sensor</a> $\longrightarrow$ <strong>Selected Figaro NGM 2511-E13</strong>.</li>
+<li><a href="./CO2_v2/CO2.html">CO2 sensor (+temp, +humidity)</a> $\longrightarrow$ <strong>Selected Sensiron SCD30</strong>.</li>
+<li><a href="./Switch/Switch.html">Switches</a></li>
+<li><a href="./SD_Card/SD_Card.html">SD card</a></li>
+<li><a href="./Real_Time_Clock/Real_Time_Clock.html">Real time clock</a></li>
+<li><a href="./Stepper_Motor/Stepper_Motor.html">Stepper motors</a></li>
+</ul>
+<p>The integration of electronic components and testing results.</p>
+<ul>
+<li><a href="./Flux_Chamber/Flux_Chamber.html">Flux chamber</a> $\longrightarrow$ The <strong>main body of code</strong> to run the integrated motor and data logging system.</li>
+<li><a href="./PCB/PCB.html">Printed circuit board</a> $\longrightarrow$ The integrated electronic component.</li>
+<li><a href="./Terminal_Interface/Terminal_Interface.html">Terminal interface</a> $\longrightarrow$ A debugging interface to test motor and logging settings.</li>
+<li><a href="./Testing/Testing.html">Testing</a> $\longrightarrow$ Results and demonstration video.</li>
 </ul>
 </div>
 </div>
@@ -7653,11 +7638,7 @@ a.anchor-link {
 <h2 id="Resources-and-literature">Resources and literature<a class="anchor-link" href="#Resources-and-literature">¶</a></h2><ul>
 <li><a href="./Literature/Proposal.pdf">The proposal for this project, which describes our objectives</a></li>
 <li><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024JG008035">Self-Made Equipment for Automatic Methane Diffusion and Ebullition Measurements From Aquatic Environments</a></li>
-<li>[Technical note: Facilitating the use of low-cost methane (CH4)</li>
-</ul>
-<p>sensors in flux chambers – calibration, data processing, and
-an open-source make-it-yourself logger](<a href="https://bg.copernicus.org/articles/17/3659/2020/">https://bg.copernicus.org/articles/17/3659/2020/</a>)</p>
-<ul>
+<li><a href="https://bg.copernicus.org/articles/17/3659/2020/">Technical note: Facilitating the use of low-cost methane (CH4) sensors in flux chambers – calibration, data processing, and an open-source make-it-yourself logger</a></li>
 <li><a href="https://www.sciencedirect.com/science/article/pii/S0048969723015115?via%3Dihub">Methane and carbon dioxide fluxes at high spatiotemporal resolution from a small temperate lake</a></li>
 <li><a href="https://github.com/JonasStage/Methane-and-CO2-sensor/tree/main">Jonas Stage git repo</a></li>
 <li><a href="./Literature/Building_J_Sensors.pdf">Building J-Sensors</a></li>

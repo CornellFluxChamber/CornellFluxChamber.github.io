@@ -7483,7 +7483,7 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Methane-Sensor">Methane Sensor<a class="anchor-link" href="#Methane-Sensor">¶</a></h1><p><em>Written by Grace Lo &amp; Alina Wang</em></p>
-<p>The methane recording procedure was developed and tested on the <a href="https://www.figarosensor.com/product/entry/ngm2611.html">Figaro NGM2611-E13</a> Methane Sensor Module. It is pre-calibrated at controlled humidity and temperature and outputs continuous analog results, ideal for detecting changes. The NGM2611-E13 has been used in previous research, including the original flux chamber prototype. As such, it has a known calibration method and are readily deployable. The data is provided in raw values to reduce compuation on the device and give users the autonomy to post-process as they see fit. It is important to note that when energizing the sensor after a period of inactivation, the resistance drops significantly causing high voltage readings. However after a moment of recovery, it will stabilize and be ready for data collection. Current lab testing (in absense of varying methane concentrations) has shown values ranging from 25 to 310, with the output generally hovering at approximately 20 to 40.</p>
+<p>The methane recording procedure was developed and tested on the <a href="https://www.figarosensor.com/product/entry/ngm2611.html">Figaro NGM2611-E13</a> Methane Sensor Module. It is pre-calibrated at controlled humidity and temperature and outputs continuous analog results, ideal for detecting changes. The NGM2611-E13 has been used in previous research, including the original flux chamber prototype. As such, it has a known calibration method and is readily deployable. The data is provided in raw values to reduce compuation on the device and give users the autonomy to post-process as they see fit. It is important to note that the sensor requires approximately 4-6 minutes of warm-up time to stabilize readings after a 90-day period of inactivation (see technical information of the <a href="https://www.figarosensor.com/product/docs/Long2611CE%20Layout%20(1117).pdf)">TGS2611-E00</a>. The flux chamber accounts for this by beginning the sequence with airing out the chamber for an extended period of time, which gives time for the sensor elements to warm-up and prepare for measurements. Current lab testing (in absense of varying methane concentrations) has shown values ranging from 300 to 500.</p>
 </div>
 </div>
 </div>
@@ -7494,13 +7494,13 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Pin-Connections">Pin Connections<a class="anchor-link" href="#Pin-Connections">¶</a></h2><p>Breadboarding best practices should be followed.</p>
-<img alt="Pin Connections" src="img/pin_connections.png" width="400"/>
+<h2 id="Pin-Connections">Pin Connections<a class="anchor-link" href="#Pin-Connections">¶</a></h2><img alt="Pin Connections" src="img/pin_connections.png" width="400"/>
 <p>Pin connections from the <strong>methane sensor → Pico</strong> are as follows:</p>
 <ul>
 <li>V<sub>IN</sub> (5V) → VBUS (pin 40)</li>
 <li>V<sub>OUT</sub> → ADC0 (pin 31)</li>
 <li>V<sub>REF</sub> → ADC_VREF (pin 35)</li>
+<li>V<sub>H-</sub> → GND</li>
 <li>GND → GND</li>
 </ul>
 </div>
@@ -7528,7 +7528,6 @@ a.anchor-link {
 <p>The following files are required to interface with the methane sensor and enable the specified GPIO pin to read continuous analog values instead of binary digital values.</p>
 <pre><code>#include &lt;stdio.h&gt;
 #include "pico/stdlib.h"
-#include "hardware/gpio.h"
 #include "hardware/adc.h"
 </code></pre>
 </div>
@@ -7557,9 +7556,6 @@ adc_select_input(0);
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h3 id="Read">Read<a class="anchor-link" href="#Read">¶</a></h3><p>The methane sensor module is read using <code>adc_read()</code> and directly written to the file.</p>
-<p>An example of the data logging to a CSV file is provided below:</p>
-<img alt="CSV File" src="img/csv_file.png" width="400"/>
-<p>Note that our current lab setup does not have the proper equipment to artificially test methane levels.</p>
 </div>
 </div>
 </div>

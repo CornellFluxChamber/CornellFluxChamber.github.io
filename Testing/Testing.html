@@ -7483,7 +7483,110 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Testing">Testing<a class="anchor-link" href="#Testing">¶</a></h1><p><em>Written by Grace Lo &amp; Rachel Yan</em></p>
-<p>We conducted an extended test of the electrical system untethered. This means that the Raspberry Pi Pico and the motor were connected to a portable battery and left to run until the battery ran out. It is important to note that the portable battery had been used for small-scale testing beforehand so it was not at its full capcity. In addition, the battery was tested on many short cycles, so presumably, longer cycle times can drain more battery than the current power per cycle estimate. The testing cycle followed a sequence of:</p>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="Aug-15,-2025-Update"><em>Aug 15, 2025 Update</em><a class="anchor-link" href="#Aug-15,-2025-Update">¶</a></h3><p>Since the previous update, there have been changes to the motor, methane sensor wiring, feedback switches, and overall error protection of the system. Testing was completed with the time frame of 20 minutes airing out the chamber and 40 mins of data logging at a sampling interval of 2 seconds, which was used in previous prototypes. This means much faster sampling and a significant increase in logged data as compared to previous tests. Many tests have been conducted to debug long deployment issues concerning system freezes and time drift. Optimizations have also been made to reduce power and the number of invalid data points. At present, extended tests spanning 80 hours confirm no system freezes or time drift; the system operates as expected until it runs out of battery. Here is a video demonstration of the chamber system thus far. Without the presence of water, the float switch is triggered by manually moving the float up.</p>
+<div style="text-align:center;">
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" frameborder="0" height="562.5" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/q_gc12ipDj4?si=hap5WYG3zzseUN87" title="YouTube video player" width="1000"></iframe>
+</div>
+<p>The only error that persists in the system is I²C communication with the Sensirion SCD30 sensor. Although failed transactions cannot be completely eliminated, the rate of error can be improved based on the sampling interval, that is to say, increasing the sampling interval decreases the chance of errors. The most recent testing on the PCB seeks to diagnose the effect of sampling interval on the number of invalid data points. The tests consist of the following sequence:</p>
+<ol>
+<li>Open chamber (21.3 sec)</li>
+<li>Wait (9 min 38.7 sec)</li>
+<li>Close chamber (21.3 sec)</li>
+<li>Wait (9 min 38.7 sec)</li>
+<li>Sensor reads every x sec (40 min total)</li>
+<li>Repeat</li>
+</ol>
+<p>The graph below illustrates the findings thus far, with further testing on other sampling intervals to come:</p>
+<img alt="Error Rate Graph" src="img/error_rate.png" width="400"/>
+<p>The experiments used an 88.8 Wh portable battery and are being redone for the 2s and 10s sampling interval tests to gauge the battery life at different intervals.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<table>
+<tr>
+<td>
+<img alt="2s" height="300" src="img/2s.png"/><br/>
+<ul>
+<li>65:41:06 elapsed time</li>
+<li>75,946 data points</li>
+<li>163 invalid data point</li>
+<li>65.685 cycles</li>
+<li>1,156 avg data pts per cycle</li>
+</ul>
+</td>
+<td>
+<img alt="5s" height="300" src="img/5s.png"/><br/>
+<ul>
+<li>83:53:57 elapsed time</li>
+<li>39,824 data points</li>
+<li>47 invalid data point</li>
+<li>83.899 cycles</li>
+<li>475 avg data pts per cycle</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td>
+<img alt="10s" height="300" src="img/10s.png"/><br/>
+<ul>
+<li>44:39:49 elapsed time</li>
+<li>10,748 data points</li>
+<li>3 invalid data point</li>
+<li>44.664 cycles</li>
+<li>241 avg data pts per cycle</li>
+</ul>
+</td>
+<td>
+<img alt="20s" height="300" src="img/20s.png"/><br/>
+<ul>
+<li>87:30:02 elapsed time</li>
+<li>10,383 data points</li>
+<li>1 invalid data point</li>
+<li>87.501 cycles</li>
+<li>119 avg data pts per cycle</li>
+</ul>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="Jun-26,-2025-Update"><em>Jun 26, 2025 Update</em><a class="anchor-link" href="#Jun-26,-2025-Update">¶</a></h3><p>We conducted an extended test of the electrical system untethered. This means that the Raspberry Pi Pico and the motor were connected to a portable battery and left to run until the battery ran out. It is important to note that the portable battery had been used for small-scale testing beforehand so it was not at its full capcity. In addition, the battery was tested on many short cycles, so presumably, longer cycle times can drain more battery than the current power per cycle estimate. The testing cycle followed a sequence of:</p>
 <ol>
 <li>Open chamber (~1 min)</li>
 <li>Wait (0.5 min)</li>

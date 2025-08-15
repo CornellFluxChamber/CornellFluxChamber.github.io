@@ -7530,8 +7530,7 @@ a.anchor-link {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h3 id="Includes">Includes<a class="anchor-link" href="#Includes">¶</a></h3><p>The first lines of code in the C source file include header files. <em>Don't forget to link these in the CMakeLists.txt file!</em></p>
 <p>The following files are required to interface with the SD card, including the <a href="http://elm-chan.org/fsw/ff/00index_e.html">FatFs</a> library adapted for SD cards.</p>
-<pre><code>#include &lt;stdlib.h&gt;
-#include &lt;stdio.h&gt;
+<pre><code>#include &lt;stdio.h&gt;
 #include &lt;string.h&gt;
 #include "pico/stdlib.h"
 #include "sd_card.h"
@@ -7574,9 +7573,10 @@ if (fr != FR_OK)
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h3 id="Interfacing-with-the-SD-Card">Interfacing with the SD Card<a class="anchor-link" href="#Interfacing-with-the-SD-Card">¶</a></h3><p>The <a href="http://elm-chan.org/fsw/ff/00index_e.html">FatFs</a> library provides many filesystem functions, but only the ones used in this project will be described below.</p>
-<p><b>Write to a file:</b> Open the file and if the file "filename" does not exist, a new file is created. But if the file already exists, the new content will be appended to the bottom of the file. <i>All open files must be closed.</i><br/>
+<p><b>Write to a file:</b> Open the file and if the file "filename" does not exist, a new file is created. But if the file already exists, the new content will be appended to the bottom of the file. Synchronize cached information by writing to the SD card periodically to avoid data loss. <i>All open files must be closed.</i><br/>
 <code>f_open(&amp;file_struct, "filename", FA_WRITE | FA_OPEN_APPEND)</code><br/>
-<code>f_write(&amp;file_struct, "contents", strlen("contents"), &amp;wr_count)</code>
+<code>f_write(&amp;file_struct, "contents", strlen("contents"), &amp;wr_count)</code><br/>
+<code>f_sync(&amp;file_struct)</code><br/>
 <code>f_close(&amp;file_struct)</code></p>
 <p><b>Read from a file:</b> Open the file with read access, then read the contents. <i>All open files must be closed.</i><br/>
 <code>f_open(&amp;file_struct, "filename", FA_READ)</code><br/>
