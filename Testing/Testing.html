@@ -7509,9 +7509,9 @@ a.anchor-link {
 <li>Sensor reads every x sec (40 min total)</li>
 <li>Repeat</li>
 </ol>
-<p>The graph below illustrates the findings thus far, with further testing on other sampling intervals to come:</p>
+<p>The graph below illustrates the findings thus far: sampling intervals between the 2 to 10 second range have comparable error rates, however drastically increasing the sampling interval to 20 seconds greatly improves the error rate. Further testing will be completed on other sampling intervals to continue mapping out such behavior.</p>
 <img alt="Error Rate Graph" src="img/error_rate.png" width="400"/>
-<p>The experiments used an 88.8 Wh portable battery and are being redone for the 2s and 10s sampling interval tests to gauge the battery life at different intervals.</p>
+<p>The experiments used an 88.8 Wh portable battery charged to full capacity, with battery life varying between 80 and 90 hours. This comes out to a power draw of ~1 W, which when connected to a solar panel, has the potential to run indefinitely.</p>
 </div>
 </div>
 </div>
@@ -7525,13 +7525,13 @@ a.anchor-link {
 <table>
 <tr>
 <td>
-<img alt="2s" src="img/2s.png" width="490"/><br/>
+<img alt="2s" src="img/2s.png" width="493"/><br/>
 <ul>
-<li>65:41:06 elapsed time</li>
-<li>75,946 data points</li>
-<li>163 invalid data point</li>
-<li>65.685 cycles</li>
-<li>1,156 avg data pts per cycle</li>
+<li>91:04:01 elapsed time</li>
+<li>104,237 data points</li>
+<li>191 invalid data points (1 pico power cycle)</li>
+<li>91.067 cycles</li>
+<li>1,145 avg data pts per cycle</li>
 </ul>
 </td>
 <td>
@@ -7539,7 +7539,7 @@ a.anchor-link {
 <ul>
 <li>83:53:57 elapsed time</li>
 <li>39,824 data points</li>
-<li>47 invalid data point</li>
+<li>47 invalid data points</li>
 <li>83.899 cycles</li>
 <li>475 avg data pts per cycle</li>
 </ul>
@@ -7547,13 +7547,13 @@ a.anchor-link {
 </tr>
 <tr>
 <td>
-<img alt="10s" src="img/10s.png" width="490"/><br/>
+<img alt="10s" src="img/10s.png" width="493"/><br/>
 <ul>
-<li>44:39:49 elapsed time</li>
-<li>10,748 data points</li>
-<li>3 invalid data point</li>
-<li>44.664 cycles</li>
-<li>241 avg data pts per cycle</li>
+<li>93:49:42 elapsed time</li>
+<li>22,352 data points</li>
+<li>30 invalid data points</li>
+<li>93.828 cycles</li>
+<li>238 avg data pts per cycle</li>
 </ul>
 </td>
 <td>
@@ -7561,7 +7561,7 @@ a.anchor-link {
 <ul>
 <li>87:30:02 elapsed time</li>
 <li>10,383 data points</li>
-<li>1 invalid data point</li>
+<li>1 invalid data points</li>
 <li>87.501 cycles</li>
 <li>119 avg data pts per cycle</li>
 </ul>
