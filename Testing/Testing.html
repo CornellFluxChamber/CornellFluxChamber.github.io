@@ -7518,7 +7518,16 @@ a.anchor-link {
 <img alt="Pond Test 2" src="img/pond_test/2.png" width="400"/>
 <img alt="Pond Test 3" src="img/pond_test/3.png" width="400"/>
 </div>
-<p>The chamber was set to run on an hour-long cycle (ie. 20 min chamber flush &amp; 40 min data log measuring every 5 sec) and was retrieved once the 88.8 Wh portable battery ran out of charge. For clarity, the night hours defined by sunset to sunrise are shaded in gray. Here is a summary of results:</p>
+<p>The chamber was set to run on an hour-long cycle following a sequence of:</p>
+<ol>
+<li>Open chamber (~20 s)</li>
+<li>Wait (9 min 40 s)</li>
+<li>Close chamber (~20 s)</li>
+<li>Wait (9 min 40 s)</li>
+<li>Sensor reads every 5 sec (40 min)</li>
+<li>Repeat</li>
+</ol>
+<p>The 1st 10 minutes (step 1 &amp; 2) opens and flushes the chamber through passive air flow. The 2nd 10 minutes (step 3 &amp; 4) seals the chamber and waits for external conditions to settle before starting the measurements. The remaining 40 minutes is dedicated to sampling at 0.2 Hz. Note that the sensor logging is paused during the first 20 minutes of each cycle, resulting in data gaps. The chamber was retrieved once the 88.8 Wh portable battery ran out of charge. For clarity, the night hours defined by sunset to sunrise are shaded in gray. Here is a summary of results:</p>
 <ul>
 <li>90:35:01 elapsed time</li>
 <li>43,088 data points</li>
@@ -7527,8 +7536,13 @@ a.anchor-link {
 <li>476	avg data pts per cycle</li>
 </ul>
 <div style="text-align:center;">
-<img alt="Pond Results" src="img/pond_test/pond_results.png" width="800">
+<img alt="Pond Results" src="img/pond_test/results/1.png" width="800">
 </img></div>
+<div style="text-align:center;">
+<img alt="Pond Test 1" src="img/pond_test/results/2.png" width="400"/>
+<img alt="Pond Test 2" src="img/pond_test/results/3.png" width="400"/>
+<img alt="Pond Test 3" src="img/pond_test/results/4.png" width="400"/>
+</div>
 </div>
 </div>
 </div>
@@ -7653,7 +7667,7 @@ a.anchor-link {
 </ul>
 </img></td>
 <td>
-<img alt="20s" src="img/long_term_test/20s.png" width="500"/><br/>
+<img alt="20s" src="img/long_term_test/20s.png" width="500"><br/>
 <ul>
 <li>87:30:02 elapsed time</li>
 <li>10,383 data points</li>
@@ -7661,7 +7675,7 @@ a.anchor-link {
 <li>87.501 cycles</li>
 <li>119 avg data pts per cycle</li>
 </ul>
-</td>
+</img></td>
 </tr>
 </table>
 </div>
@@ -7695,8 +7709,8 @@ a.anchor-link {
 <li>Repeat</li>
 </ol>
 <div style="text-align:center;">
-<img alt="Test Setup" src="img/electronic_test/test_setup.png" width="600"/>
-</div>
+<img alt="Test Setup" src="img/electronic_test/setup.png" width="600">
+</img></div>
 <p>All systems performed as expected. Highlights include:</p>
 <ul>
 <li>33:48:03 elapsed time</li>
@@ -7706,8 +7720,8 @@ a.anchor-link {
 </ul>
 <p>The data was logged in a .csv file that was converted to a .xlsx file for advanced graphing purposes.</p>
 <div style="text-align:center;">
-<img alt="Test Results" src="img/electronic_test/test_results.png" width="800"/>
-</div>
+<img alt="Test Results" src="img/electronic_test/results.png" width="800">
+</img></div>
 </div>
 </div>
 </div>
