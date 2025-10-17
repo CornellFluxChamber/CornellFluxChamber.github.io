@@ -7485,11 +7485,61 @@ a.anchor-link {
 <h1 id="Testing">Testing<a class="anchor-link" href="#Testing">¶</a></h1><p><em>Written by Grace Lo &amp; Rachel Yan</em></p>
 <blockquote>
 <ul>
+<li><a href="#Pond-Test">Pond Test</a></li>
 <li><a href="#Float-Tests">Float Tests</a></li>
 <li><a href="#Chamber-Mechanism-&amp;-Long-Term-Tests">Chamber Mechanism &amp; Long-Term Tests</a></li>
 <li><a href="#Electronic-Tests">Electronic Tests</a></li>
 </ul>
 </blockquote>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="Pond-Test"><strong>Pond Test</strong><a class="anchor-link" href="#Pond-Test">¶</a></h3><h5 id="Oct-14,-2025-Update"><em>Oct 14, 2025 Update</em><a class="anchor-link" href="#Oct-14,-2025-Update">¶</a></h5><p>We took the chamber out to a 12 ft deep pond for a weekend test, where it underwent 0.6 inches of rainfall. It was equipped with 1 ft leg supports for extra stability in windy conditions, a waterproof, UV-protected tarp to shield the battery, and a brick to anchor the structure. Deployment went smoothly - the battery was turned on and legs were attached on land, then the system was paddled out to the middle of the pond.</p>
+<div style="text-align:center;">
+<img alt="Pond Test 1" src="img/pond_test/1.png" width="400"/>
+<img alt="Pond Test 2" src="img/pond_test/2.png" width="400"/>
+<img alt="Pond Test 3" src="img/pond_test/3.png" width="400"/>
+</div>
+<p>The chamber was set to run on an hour-long cycle (ie. 20 min chamber flush &amp; 40 min data log measuring every 5 sec) and was retrieved once the 88.8 Wh portable battery ran out of charge. For clarity, the night hours defined by sunset to sunrise are shaded in gray. Here is a summary of results:</p>
+<ul>
+<li>90:35:01 elapsed time</li>
+<li>43,088 data points</li>
+<li>10 invalid data points</li>
+<li>90.584 cycles</li>
+<li>476	avg data pts per cycle</li>
+</ul>
+<div style="text-align:center;">
+<img alt="Pond Results" src="img/pond_test/pond_results.png" width="800">
+</img></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
 </div>
 </div>
 </div>
@@ -7554,9 +7604,11 @@ a.anchor-link {
 <li>Repeat</li>
 </ol>
 <p>The graph below illustrates the findings thus far: sampling intervals between the 2 to 10 second range have comparable error rates, however drastically increasing the sampling interval to 20 seconds greatly improves the error rate. Further testing will be completed on other sampling intervals to continue mapping out such behavior.</p>
+<div style="text-align:center;">
 <img alt="Error Rate Graph" src="img/long_term_test/error_rate.png" width="400">
-<p>The experiments used an 88.8 Wh portable battery charged to full capacity, with battery life varying between 80 and 90 hours. This comes out to a power draw of ~1 W, which when connected to a solar panel, has the potential to run indefinitely.</p>
 </img></div>
+<p>The experiments used an 88.8 Wh portable battery charged to full capacity, with battery life varying between 80 and 90 hours. This comes out to a power draw of ~1 W, which when connected to a solar panel, has the potential to run indefinitely.</p>
+</div>
 </div>
 </div>
 </div>
@@ -7579,7 +7631,7 @@ a.anchor-link {
 </ul>
 </img></td>
 <td>
-<img alt="5s" src="img/long_term_test/5s.png" width="500"/><br/>
+<img alt="5s" src="img/long_term_test/5s.png" width="500"><br/>
 <ul>
 <li>83:53:57 elapsed time</li>
 <li>39,824 data points</li>
@@ -7587,11 +7639,11 @@ a.anchor-link {
 <li>83.899 cycles</li>
 <li>475 avg data pts per cycle</li>
 </ul>
-</td>
+</img></td>
 </tr>
 <tr>
 <td>
-<img alt="10s" src="img/long_term_test/10s.png" width="493"/><br/>
+<img alt="10s" src="img/long_term_test/10s.png" width="493"><br/>
 <ul>
 <li>93:49:42 elapsed time</li>
 <li>22,352 data points</li>
@@ -7599,7 +7651,7 @@ a.anchor-link {
 <li>93.828 cycles</li>
 <li>238 avg data pts per cycle</li>
 </ul>
-</td>
+</img></td>
 <td>
 <img alt="20s" src="img/long_term_test/20s.png" width="500"/><br/>
 <ul>
@@ -7642,7 +7694,9 @@ a.anchor-link {
 <li>Sensor reads every 10 sec (1 min total)</li>
 <li>Repeat</li>
 </ol>
+<div style="text-align:center;">
 <img alt="Test Setup" src="img/electronic_test/test_setup.png" width="600"/>
+</div>
 <p>All systems performed as expected. Highlights include:</p>
 <ul>
 <li>33:48:03 elapsed time</li>
@@ -7651,7 +7705,9 @@ a.anchor-link {
 <li>491 cycles</li>
 </ul>
 <p>The data was logged in a .csv file that was converted to a .xlsx file for advanced graphing purposes.</p>
+<div style="text-align:center;">
 <img alt="Test Results" src="img/electronic_test/test_results.png" width="800"/>
+</div>
 </div>
 </div>
 </div>
