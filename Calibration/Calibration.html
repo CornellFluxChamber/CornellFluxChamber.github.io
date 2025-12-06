@@ -3,7 +3,7 @@
 <html lang="en">
 <head><meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>index</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>Calibration</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <style type="text/css">
     pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -7482,7 +7482,8 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Cornell-Flux-Chamber">Cornell Flux Chamber<a class="anchor-link" href="#Cornell-Flux-Chamber">¶</a></h1>
+<h1 id="Calibration-Notes">Calibration Notes<a class="anchor-link" href="#Calibration-Notes">¶</a></h1><p><em>Written by Grace Lo</em></p>
+<p><em>This is a WIP page with calibration notes that may be helpful.</em></p>
 </div>
 </div>
 </div>
@@ -7493,174 +7494,15 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<blockquote>
+<p>From what I understand, the previous prototype read voltage readings from the <a href="https://www.figarosensor.com/product/entry/ngm2611.html">Figaro NGM2611-E13</a> methane sensor and later post-processed the data for ppm readings.</p>
+<p>The current setup provides methane data in raw analog values. I propose the code stays as is to maintain the highest level of precision and reduce computation during deployment, then the raw analog values can be post-processed using the following conversion sequence:</p>
+<img alt="Conversion Equations" src="img/conversion.png" width="400"/>
+<p>where</p>
 <ul>
-<li><a href="#Project-overview">Project overview</a></li>
-<li><a href="#Mechanical-design">Mechanical design</a></li>
-<li><a href="#Electrical-design">Electrical design</a></li>
-<li><a href="#Calibration-and-deployment-instructions">Calibration and deployment instructions</a></li>
-<li><a href="#Resources-and-literature">Resources and literature</a></li>
+<li>V<sub>C</sub> = V<sub>IN</sub> = 5</li>
+<li><a href="https://www.figarosensor.com/product/docs/ngm2611-e13_product%20information%28fusa%29_rev03.pdf">R<sub>L</sub> = 1.1k-4.7kΩ</a></li>
+<li>PPM uses the graph from <a href="https://www.figarosensor.com/product/docs/tgs2611-e00_product_information%28fusa%29_rev02.pdf">TGS 2611-E00</a></li>
 </ul>
-</blockquote>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Project-overview">Project overview<a class="anchor-link" href="#Project-overview">¶</a></h2><p>Methane (CH4) emissions are increasing globally. Yet, partitioning different sources of methane emissions remains challenging due to the limited spatial and temporal scale of field measurements. Improving ground measurements of CH4 flux will allow us to identify and quantify how different policy and management actions can reduce emissions. In order to increase ground measurements of CH4 flux, we need affordable, rugged, and portable sensors that can be deployed for days to weeks at a time. This webpage documents the design, construction, and field testing of 10 prototype chambers to measure CH4 and carbon dioxide (CO2) flux from a variety of environments (e.g., manure, wetlands, lakes, agricultural fields). The development of these affordable, portable, rugged, and easy to use chambers will expand ground CH4 flux measurements world-wide, ultimately providing much-needed science to inform carbon policy.</p>
-<p><strong>This webpage is dynamic, and will be updated as the project progresses.</strong></p>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Mechanical-design">Mechanical design<a class="anchor-link" href="#Mechanical-design">¶</a></h2><ul>
-<li><a href="./Mechanical/Mechanical.html">Design considerations</a> $\longrightarrow$ Agreed upon first variation shown on this page.</li>
-<li><a href="./Chamber_Design/Chamber_Design.html">Chamber design</a> $\longrightarrow$ Current mechanical prototype.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Electrical-design">Electrical design<a class="anchor-link" href="#Electrical-design">¶</a></h2><p>Sensor considerations</p>
-<ul>
-<li><a href="https://docs.google.com/spreadsheets/d/1rdSiY21HsB15AhayNILNWM_bd6uwlbhkO6BxMMC41wQ/edit?gid=0#gid=0">Sensor trade study</a></li>
-<li><a href="./Sensors/Options.pdf">Overview of sensor options, for discussion with colleagues</a></li>
-</ul>
-<p>As we develop libraries for communicating with the various sensors and components that compose our floating flux chamber, those libraries, schematic, layout, etc. will be documented on webpages linked below. All project code lives in <a href="https://github.com/CornellFluxChamber/ChamberCode/tree/master/CornellFluxChamber">this git repository</a>.</p>
-<ul>
-<li><a href="./Methane/Methane.html">Methane sensor</a> $\longrightarrow$ <strong>Selected Figaro NGM 2511-E13</strong>.</li>
-<li><a href="./CO2_v2/CO2.html">CO2 sensor (+temp, +humidity)</a> $\longrightarrow$ <strong>Selected Sensiron SCD30</strong>.</li>
-<li><a href="./Switch/Switch.html">Switches</a></li>
-<li><a href="./SD_Card/SD_Card.html">SD card</a></li>
-<li><a href="./Real_Time_Clock/Real_Time_Clock.html">Real time clock</a></li>
-<li><a href="./Stepper_Motor/Stepper_Motor.html">Stepper motors</a></li>
-</ul>
-<p>The integration of electronic components.</p>
-<ul>
-<li><a href="./Flux_Chamber/Flux_Chamber.html">Flux chamber</a> $\longrightarrow$ The <strong>main body of code</strong> to run the integrated motor and data logging system.</li>
-<li><a href="./Terminal_Interface/Terminal_Interface.html">Terminal interface</a> $\longrightarrow$ A debugging interface to test motor and logging settings.</li>
-<li><a href="./PCB/PCB.html">Printed circuit board</a> $\longrightarrow$ The integrated electronic component.</li>
-</ul>
-<p>Testing results.</p>
-<ul>
-<li><a href="./Testing/Testing.html">Testing</a> $\longrightarrow$ Results and demonstration video.</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Calibration-and-deployment-instructions">Calibration and deployment instructions<a class="anchor-link" href="#Calibration-and-deployment-instructions">¶</a></h2><ul>
-<li><a href="./Assembly/Assembly.html">Assembly instructions</a></li>
-<li><a href="./Calibration/Calibration.html">Calibration notes that may be helpful</a></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Resources-and-literature">Resources and literature<a class="anchor-link" href="#Resources-and-literature">¶</a></h2><ul>
-<li><a href="./Literature/Proposal.pdf">The proposal for this project, which describes our objectives</a></li>
-<li><a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2024JG008035">Self-Made Equipment for Automatic Methane Diffusion and Ebullition Measurements From Aquatic Environments</a></li>
-<li><a href="https://bg.copernicus.org/articles/17/3659/2020/">Technical note: Facilitating the use of low-cost methane (CH4) sensors in flux chambers – calibration, data processing, and an open-source make-it-yourself logger</a></li>
-<li><a href="https://www.sciencedirect.com/science/article/pii/S0048969723015115?via%3Dihub">Methane and carbon dioxide fluxes at high spatiotemporal resolution from a small temperate lake</a></li>
-<li><a href="https://github.com/JonasStage/Methane-and-CO2-sensor/tree/main">Jonas Stage git repo</a></li>
-<li><a href="./Literature/Building_J_Sensors.pdf">Building J-Sensors</a></li>
-<li><a href="./Literature/Calibrating_J_Sensors.pdf">Calibrating J-Sensors</a></li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<hr/>
 </div>
 </div>
 </div>

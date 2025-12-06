@@ -7485,8 +7485,11 @@ a.anchor-link {
 <h1 id="Assembly-Instructions">Assembly Instructions<a class="anchor-link" href="#Assembly-Instructions">¶</a></h1><p><em>Written by Grace Lo</em></p>
 <blockquote>
 <ul>
-<li><a href="#Electronics-Parts-List">Electronics</a></li>
-<li><a href="#Chamber-Parts-List">Chamber</a></li>
+<li><a href="#Electronics-Assembly">Electronics</a><ul>
+<li><a href="#Flashing-the-Raspberry-Pi-Pico">Flashing the Raspberry Pi Pico</a></li>
+</ul>
+</li>
+<li><a href="#Chamber-Assembly">Chamber</a></li>
 </ul>
 </blockquote>
 </div>
@@ -7672,6 +7675,7 @@ a.anchor-link {
 <li>Soldering Iron</li>
 <li>Wire Stripper</li>
 <li>Diagonal Cutter</li>
+<li><a href="https://www.raspberrypi.com/products/debug-probe/">Raspberry Pi Debug Probe</a> (optional)</li>
 </ul>
 </div>
 </div>
@@ -7709,15 +7713,79 @@ a.anchor-link {
 </li>
 </ul>
 </li>
-<li><p>Flash the code onto the Raspberry Pi Pico.</p>
+<li><p>Flash the code onto the Raspberry Pi Pico (see next section).</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="Flashing-the-Raspberry-Pi-Pico">Flashing the Raspberry Pi Pico<a class="anchor-link" href="#Flashing-the-Raspberry-Pi-Pico">¶</a></h3><p>The code must be loaded onto the Pico every time there is a change.</p>
+<ol>
+<li><p>On your laptop's command-line interface (Terminal for macOS/Linux or PowerShell for Windows):</p>
 <ul>
-<li>Clone the <a href="https://github.com/CornellFluxChamber/ChamberCode">CornellFluxChamber</a> Github repository (<code>git clone https://github.com/CornellFluxChamber/ChamberCode.git</code>).</li>
-<li>Install the Raspberry Pi Pico extension in <a href="https://code.visualstudio.com/">Visual Studio Code</a>.</li>
-<li>Click the Pico extension and "Import Project" by changing the location to the ChamberCode project folder (<code>[your_path]/CornellFluxChamber/ChamberCode</code>).</li>
-<li>A new window will open with the contents of the project. Click "Compile" at the bottom of the screen to build the project. To flash the Pico, hold down the Bootsel button and plug it in. Then click the "Run" icon at the bottom of the screen.</li>
+<li>Navigate to the folder you want to store the code using <code>cd [your_path]</code></li>
+<li>Then clone the <a href="https://github.com/CornellFluxChamber/ChamberCode">CornellFluxChamber</a> Github repository using <code>git clone https://github.com/CornellFluxChamber/ChamberCode.git</code></li>
+</ul>
+</li>
+<li><p>Download <a href="https://code.visualstudio.com/">Visual Studio Code</a> if you don't have it already and install the <em>Raspberry Pi Pico</em> and <em>Serial Monitor</em> extensions.</p>
+<img alt="Step 2a" src="img/flash_pico/step2a.png" width="300"/>
+<img alt="Step 2b" src="img/flash_pico/step2b.png" width="300"/>
+</li>
+<li><p>Click the Pico extension on the left sidebar and "Import Project" by changing the location to the <code>ChamberCode</code> project folder (eg. <code>[your_path]/ChamberCode/CornellFluxChamber</code>).</p>
+<ul>
+<li><p>Note: We cloned the whole <code>ChamberCode</code> repository, but we only want to open the <code>CornellFluxChamber</code> project.</p>
+</li>
+<li><p>The chamber code has a <code>CUSTOMIZABLE PARAMETERS</code> section to change:</p>
+<ul>
+<li>Filename</li>
+<li>Date/time</li>
+<li>Total sampling time per cycle</li>
+<li>Sampling interval between each measurement</li>
+<li>Total chamber flush time per cycle</li>
+<li>Debug boolean</li>
+</ul>
+<p>For more information, see the <a href="./Flux_Chamber/Flux_Chamber.html">Flux Chamber</a> page.</p>
+</li>
+</ul>
+</li>
+<li><p>A new window will open with a list of the contents on the left. Click "Compile" at the bottom of the screen to build the project.</p>
+<ul>
+<li><p>Note: There are 2 known warnings when compiling the code, but it does not affect the functionality of the system.</p>
+<img alt="Step 4" src="img/flash_pico/step4.png" width="700"/>
+</li>
+</ul>
+</li>
+<li><p>Hold down the Bootsel button and plug the USB cable into your laptop. Then click the "Run" icon at the bottom of the screen to flash the Pico.</p>
+</li>
+</ol>
+<p>There are 2 ways to verify correct setup:</p>
+<ol>
+<li>Let the system run for 1 minute, then power it off and read the SD card contents.</li>
+<li>There is a serial monitor displaying real-time information about the running system for use during initial setup.<ul>
+<li>Connect the <a href="https://www.raspberrypi.com/products/debug-probe/">Raspberry Pi Debug Probe</a> via:<ul>
+<li>PCB TX → debug probe RX (yellow)</li>
+<li>PCB RX → debug probe TX (orange)</li>
+<li>PCB GND → debug probe GND (black)</li>
+<li>USB → laptop</li>
+</ul>
+</li>
+<li>Then go to the <code>flux_chamber.c</code> file, find the <code>CUSTOMIZABLE PARAMETERS</code> section, and change <code>debug_mode = true</code>.</li>
+<li>"Compile" the changes.</li>
+<li>Go to the "Serial Monitor" tab and set the port to the one ending in "Raspberry Pi." Then "Start Monitoring."</li>
+<li>"Run" it on the Pico.</li>
 </ul>
 </li>
 </ol>
+<div style="text-align:center;">
+<img alt="Visual Studio Code Window" src="img/vscode_window.png" width="800"/>
+</div>
 </div>
 </div>
 </div>

@@ -7549,7 +7549,7 @@ a.anchor-link {
 </ul>
 </li>
 <li><code>sampling_interval_ms</code>: time interval between logging the sensor readings</li>
-<li><code>flush_chamber_ms</code>: time interval for chamber to stay open/closed to filter out the old air/develop new air, respectively<ul>
+<li><code>flush_chamber_ms</code>: total time to flush the chamber air (canopy opens at the start and closes at the end)<ul>
 <li>must be at least 2x the time to fully open/close the chamber</li>
 </ul>
 </li>
@@ -7848,8 +7848,8 @@ static void alarm_sleep_callback(uint alarm_id) {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h4 id="Motor-Movement">Motor Movement<a class="anchor-link" href="#Motor-Movement">¶</a></h4><p>The air exchange phase is set by <code>flush_chamber_ms</code>, where half of the time is allocated to opening the chamber and the other half is allocated to closing the chamber, with periods of rest in between to allow for the air to cycle. An enable pin on the motor driver enables or disables the current entering the motor. While not in use, the current is always disabled to conserve power and prevent the motor from overheating.</p>
-<p>The motor code is wrapped in the function <code>move_motor</code> that has since been augmented from the basic design on the <a href="../Stepper_Motor/Stepper_Motor.html">Stepper Motor</a> page to stop the motor based on a switch rather than a defined number of steps. This function now takes arguments for the direction (<code>0</code> to open and <code>1</code> to close the chamber) and <code>flush_chamber_ms</code> and runs the motor until a switch has been triggered. When the chamber is opening, it checks the limit switch secured to the top of the structure and when the chamber is closing, it checks the float switch secured to the moving support of the structure. If there are any problems with the motor and it cannot reach a switch within half of <code>flush_chamber_ms</code> (usually due to insufficient power at the end of the battery's life cycle), the code will exit on its own and proceed with the next step of the sequence.</p>
+<h4 id="Motor-Movement">Motor Movement<a class="anchor-link" href="#Motor-Movement">¶</a></h4><p>The air exchange phase is set by <code>flush_chamber_ms</code>, where the chamber opens in the beginning and closes at the end, with a period of rest in between to allow for the air to cycle. An enable pin on the motor driver enables or disables the current entering the motor. While not in use, the current is always disabled to conserve power and prevent the motor from overheating.</p>
+<p>The motor code is wrapped in the function <code>move_motor</code> that has since been augmented from the basic design on the <a href="../Stepper_Motor/Stepper_Motor.html">Stepper Motor</a> page to stop the motor based on a switch rather than a defined number of steps. This function now takes arguments for the direction (<code>0</code> to open and <code>1</code> to close the chamber) and runs the motor until a switch has been triggered. When the chamber is opening, it checks the limit switch secured to the top of the structure and when the chamber is closing, it checks the float switch secured to the moving support of the structure. If there are any problems with the motor and it cannot reach a switch within half of <code>flush_chamber_ms</code> (usually due to insufficient power at the end of the battery's life cycle), the code will exit on its own and proceed with the next step of the sequence.</p>
 </div>
 </div>
 </div>
