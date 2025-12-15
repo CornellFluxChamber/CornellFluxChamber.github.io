@@ -7483,7 +7483,7 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="SD-Card">SD Card<a class="anchor-link" href="#SD-Card">¶</a></h1><p><em>Written by Grace Lo &amp; Alina Wang</em></p>
-<p>Interfacing with an SD card was developed and tested on the <a href="https://www.adafruit.com/product/254">Adafruit #254</a> MicroSD card breakout board. It communicates over SPI to log sensor data and the associated date/time at a user-defined frequency into a .csv file format. The interface to the card is handled by a <a href="http://elm-chan.org/fsw/ff/00index_e.html">FatFs</a> library adapted for SD cards from <a href="https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico">carlk3</a>. The basic card functionality, including mounting the drive, opening/closing files, and read/write data is borrowed from <a href="https://people.ece.cornell.edu/land/courses/ece4760/RP2040/C_SDK_memory/SD_card/index_sd_card.html">Bruce Land</a>. The command line interface is borrowed from <a href="https://github.com/hathach/tinyusb/blob/master/examples/host/msc_file_explorer/src/msc_app.c">tinyUSB</a> examples to test the SD card functions. The SD card is completely handled by FatFs.</p>
+<p>Interfacing with an SD card was developed and tested on the <a href="https://www.adafruit.com/product/254">Adafruit MicroSD card breakout board</a>. It communicates over SPI to log sensor data and the associated date/time at a user-defined frequency into a .csv file format. The interface to the card is handled by a <a href="http://elm-chan.org/fsw/ff/00index_e.html">FatFs</a> library adapted for SD cards from <a href="https://github.com/carlk3/no-OS-FatFS-SD-SPI-RPi-Pico">carlk3</a>. The basic card functionality, including mounting the drive, opening/closing files, and read/write data is borrowed from <a href="https://people.ece.cornell.edu/land/courses/ece4760/RP2040/C_SDK_memory/SD_card/index_sd_card.html">Bruce Land</a>. The command line interface is borrowed from <a href="https://github.com/hathach/tinyusb/blob/master/examples/host/msc_file_explorer/src/msc_app.c">tinyUSB</a> examples to test the SD card functions. The SD card is completely handled by FatFs.</p>
 </div>
 </div>
 </div>
@@ -7498,7 +7498,7 @@ a.anchor-link {
 <img alt="Pin Connections" src="img/pin_connections.png" width="400"/>
 <p>Pin connections from the <strong>microSD breakout → Pico</strong> are as follows:</p>
 <ul>
-<li>Vin (5V) → VBUS (pin 40)</li>
+<li>V<sub>IN</sub> (5V) → VBUS (pin 40)</li>
 <li>GND → GND</li>
 <li>CLK → SPI0_SCK (gpio 2)</li>
 <li>DO → SPI0_RX (gpio 4)</li>
@@ -7517,7 +7517,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All code is in the <a href="https://github.com/CornellFluxChamber/ChamberCode/tree/master/CornellFluxChamber">CornellFluxChamber</a> Github repository. The code for interfacing with the SD card is incorporated into <code>flux_chamber.c</code>. It is important to note that the SD card only works reliably when its corresponding code is placed on core 1 of the dual-core Pico processor. We hypothesize that manually starting core 1 in the <code>main()</code> function provides sufficient time for the SD card to start up in a way that cannot be replicated by time delays.</p>
+<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All code is in the <a href="https://github.com/CornellFluxChamber/ChamberCode.git">CornellFluxChamber</a> Github repository. The code for interfacing with the SD card is incorporated into <code>flux_chamber.c</code>. It is important to note that the SD card only works reliably when its corresponding code is placed on core 1 of the dual-core Pico processor. We hypothesize that manually starting core 1 in the <code>main()</code> function provides sufficient time for the SD card to start up in a way that cannot be replicated by time delays.</p>
 </div>
 </div>
 </div>

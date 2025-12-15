@@ -7483,14 +7483,54 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Testing">Testing<a class="anchor-link" href="#Testing">¶</a></h1><p><em>Written by Grace Lo &amp; Rachel Yan</em></p>
+<p>This test log follows reverse chronological order, with the most recent updates at the top.</p>
 <blockquote>
 <ul>
+<li><a href="#Post-Pond-Test">Post-Pond Test</a></li>
 <li><a href="#Pond-Test">Pond Test</a></li>
 <li><a href="#Float-Tests">Float Tests</a></li>
 <li><a href="#Chamber-Mechanism-&amp;-Long-Term-Tests">Chamber Mechanism &amp; Long-Term Tests</a></li>
 <li><a href="#Electronic-Tests">Electronic Tests</a></li>
 </ul>
 </blockquote>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h3 id="Post-Pond-Tests"><strong>Post-Pond Tests</strong><a class="anchor-link" href="#Post-Pond-Tests">¶</a></h3><p>The pond test feedback included two requests:</p>
+<ol>
+<li>Change the cycle structure to immediately begin measuring once the chamber is closed</li>
+<li>Find a smaller portable battery option</li>
+</ol>
+<h5 id="Oct-27,-2025-Update"><u><em>Oct 27, 2025 Update</em></u><a class="anchor-link" href="#Oct-27,-2025-Update">¶</a></h5><p>After analyzing data from the pond test, some methane data seemed to be lost in the ~10 min wait time after closing the chamber. As such, the chamber sequence was changed to a 25-minute cycle as follows:</p>
+<ol>
+<li>Open chamber (~20 s)</li>
+<li>Wait (9 min 20 s)</li>
+<li>Close chamber (~20 s)</li>
+<li>Sensor reads every 5 sec (15 min)</li>
+<li>Repeat</li>
+</ol>
+<p>A long term test of the electronic system was completed to determine a battery life of 77:29:52 with more frequent motor use. Accordingly, the power draw increased from ~1 W to ~1.15 W.</p>
+<h5 id="Dec-12,-2025-Update"><u><em>Dec 12, 2025 Update</em></u><a class="anchor-link" href="#Dec-12,-2025-Update">¶</a></h5><p>The original battery was a <a href="https://voltaicsystems.com/v88/">Voltaic Systems V88</a> portable battery with 88.8 Wh capacity, 5 and 12 V output ports, and an always-on feature. It was initially chosen for its variable output voltage that can directly connect to the 12 V motor and its always-on feature. It lasts on average 80 hours, however the product has since been discontinued and we had to search for a new option, ideally with a target run time of 6-12 hours.</p>
+<p>Due to the Raspberry Pi Pico's low current draw, regular portable chargers cannot detect a device connection and will turn off after a short period. However, as we were testing new battery options, we discovered the flux chamber system draws enough current to bypass this smart turn off feature (we hypothesize that this is because of the motor current draw). This is very exciting! Because as long as we can step up the output 5 V to 12 V for the motor, <strong>any commercial portable battery can power our system</strong>. <a href="https://www.adafruit.com/product/2778">Adafruit's booster cable</a> makes this simple by stepping up 5 V outputs to 12 V, with the USB-A end connecting to the portable battery and the 2.1 mm barrel plug end connecting to the motor driver.</p>
+<p>This new power system was tested using a <a href="https://voltaicsystems.com/v25/">Voltaic Systems V25</a> portable battery with 6,700 mAh / 24.12 Wh capacity and 5 V output port. It ran for over 20 hours with charge remaining, far exceeding the 6-12 hour requirement. So I would recommend choosing a portable battery with $Battery$ $Capacity$ $(Wh) = 1.5$ $(W) × x$ $(hours)$ where $x$ is the desired run time and the power draw has been rounded up for contingency.</p>
 </div>
 </div>
 </div>
@@ -7543,15 +7583,6 @@ a.anchor-link {
 <img alt="Pond Test 2" src="img/pond_test/results/3.png" width="400"/>
 <img alt="Pond Test 3" src="img/pond_test/results/4.png" width="400"/>
 </div>
-<h5 id="Oct-27,-2025-Update"><em>Oct 27, 2025 Update</em><a class="anchor-link" href="#Oct-27,-2025-Update">¶</a></h5><p>After analyzing data from the pond test, some methane data seemed to be lost in the ~10 min wait time after closing the chamber. As such, the chamber sequence was changed to a 25-minute cycle as follows:</p>
-<ol>
-<li>Open chamber (~20 s)</li>
-<li>Wait (9 min 20 s)</li>
-<li>Close chamber (~20 s)</li>
-<li>Sensor reads every 5 sec (15 min)</li>
-<li>Repeat</li>
-</ol>
-<p>A long term test of the electronic system was completed to determine a battery life of 77:29:52 with more frequent motor use. Accordingly, the power draw increased from ~1 W to ~1.15 W.</p>
 </div>
 </div>
 </div>

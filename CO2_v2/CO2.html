@@ -7483,8 +7483,8 @@ a.anchor-link {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="CO%E2%82%82-Sensor">CO₂ Sensor<a class="anchor-link" href="#CO%E2%82%82-Sensor">¶</a></h1><p><em>Written by Grace Lo &amp; Rachel Yan</em></p>
-<p><em>A previous version describing the python implementation of the sensor can be found <a href="../CO2_v1/CO2_Sensor.html">here</a>.</em></p>
-<p>The CO₂ recording procedure was developed and tested on the <a href="https://sensirion.com/products/catalog/SCD30">Sensirion SCD30</a> CO₂ Sensor Module for measuring carbon dioxide (CO₂) concentration, temperature, and humidity. It is a digital sensor communicating over I²C and is pre-calibrated under controlled environmental conditions. It is also connected to a npn transistor acting as a semiconductor switch used to powercycle the sensor in the case of communication errors. According to manufacturer specifications, the sensor requires 10 minutes of warm-up time to allow for thermal stabilization when it is first turned on (see "set temperature offset" from the <a href="https://sensirion.com/media/documents/0FEA2450/61652EF9/Sensirion_CO2_Sensors_SCD30_Low_Power_Mode.pdf">Low Power Mode Guide</a>). On initial startup, the flux chamber accounts for this by beginning the sequence with airing out the chamber for an extended period of time, which gives time for the sensor elements to warm-up and prepare for measurements. However, if the CO₂ Sensor Module experiences an error during the logging period, the device will power cycle and immediately continue reading data. <em>It is up to the discretion of the user to remove data points affected by the sensor reset.</em> The basic CO₂ sensor functionality is borrowed from the Sensirion <a href="https://github.com/Sensirion/embedded-i2c-scd30">embedded-i2c-scd30</a> library. The data is provided in standard units (eg. ppm for CO₂, °C for temperature, and %RH for humidity) with specifications provided below.</p>
+<p><em>A previous version describing the python implementation of the sensor can be found <a href="../CO2_v1/CO2_Sensor.html">here</a>. This version is a C implementation to integrate with the rest of the system and also provides faster speeds than the python alternative.</em></p>
+<p>The CO₂ recording procedure was developed and tested on the <a href="https://sensirion.com/products/catalog/SCD30">Sensirion SCD30</a> CO₂ Sensor Module for measuring carbon dioxide (CO₂) concentration, temperature, and humidity. It is a digital sensor communicating over I²C and is pre-calibrated under controlled environmental conditions. It is also connected to a NPN transistor acting as a semiconductor switch used to powercycle the sensor in the case of communication errors. According to manufacturer specifications, the sensor requires 10 minutes of warm-up time to allow for thermal stabilization when it is first turned on (see "set temperature offset" from the <a href="https://sensirion.com/media/documents/0FEA2450/61652EF9/Sensirion_CO2_Sensors_SCD30_Low_Power_Mode.pdf">Low Power Mode Guide</a>). On initial startup, the flux chamber accounts for this by beginning the sequence with airing out the chamber for an extended period of time, which gives time for the sensor elements to warm-up and prepare for measurements. However, if the CO₂ Sensor Module experiences an error during the logging period, the device will power cycle and immediately continue reading data. <em>It is up to the discretion of the user to remove data points affected by the sensor reset.</em> The basic CO₂ sensor functionality is borrowed from the Sensirion <a href="https://github.com/Sensirion/embedded-i2c-scd30">embedded-i2c-scd30</a> library. The data is provided in standard units (eg. ppm for CO₂, °C for temperature, and %RH for humidity) with specifications provided below.</p>
 <table>
 <thead>
 <tr>
@@ -7525,8 +7525,8 @@ a.anchor-link {
 <p>Pin connections from the <strong>CO₂ sensor → Pico</strong> are as follows:</p>
 <ul>
 <li>V<sub>IN</sub> → 3V3(OUT) (pin 36)</li>
-<li>GND → npn → GND<ul>
-<li>npn → 1kΩ → GPIO11 (pin 15)</li>
+<li>GND → NPN → GND<ul>
+<li>NPN → 1kΩ → GPIO11 (pin 15)</li>
 </ul>
 </li>
 <li>SCL → I2C0_SCL (pin 17)</li>
@@ -7543,7 +7543,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All code is in the <a href="https://github.com/CornellFluxChamber/ChamberCode/tree/master/CornellFluxChamber">CornellFluxChamber</a> Github repository. The code for interfacing with the CO₂ sensor is incorporated into <code>flux_chamber.c</code>.</p>
+<h2 id="Code">Code<a class="anchor-link" href="#Code">¶</a></h2><p>All code is in the <a href="https://github.com/CornellFluxChamber/ChamberCode.git">CornellFluxChamber</a> Github repository. The code for interfacing with the CO₂ sensor is incorporated into <code>flux_chamber.c</code>.</p>
 </div>
 </div>
 </div>
@@ -7571,7 +7571,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h3><p>First the npn transistor is switched on to power the CO₂ sensor.</p>
+<h3 id="Initializations">Initializations<a class="anchor-link" href="#Initializations">¶</a></h3><p>First the NPN transistor is switched on to power the CO₂ sensor.</p>
 <pre><code>gpio_init(11);
 gpio_set_dir(11, GPIO_OUT);
 gpio_put(11, 1);
@@ -7590,13 +7590,13 @@ uint8_t major = 0;
 uint8_t minor = 0;
 error = scd30_read_firmware_version(&amp;major, &amp;minor);
 if (error != NO_ERROR) {
-    printf("error executing read_firmware_version(): %i\n", error);
+    printf("Error executing read_firmware_version(): %i\n", error);
 }
-printf("firmware version major: %u minor: %u\n", major, minor);
+printf("Firmware version major: %u minor: %u\n", major, minor);
 
 error = scd30_start_periodic_measurement(0);
 if (error != NO_ERROR) {
-    printf("error executing start_periodic_measurement(): %i\n", error);
+    printf("Error executing start_periodic_measurement(): %i\n", error);
 }
 </code></pre>
 </div>
@@ -7611,9 +7611,10 @@ if (error != NO_ERROR) {
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h3 id="Read-&amp;-Error-Protection">Read &amp; Error Protection<a class="anchor-link" href="#Read-&amp;-Error-Protection">¶</a></h3><p>The CO₂ sensor module is read using <code>scd30_blocking_read_measurement_data(&amp;co2,&amp;temp, &amp;hum)</code> and directly written to the file.</p>
 <p>As a digital sensor sending multi-byte packets of data, the SCD30 is susceptible to errors due to incomplete I²C transactions and failed validation from dropped bytes. Furthermore, with a default sampling interval of 2 seconds (see 1st footnote from the <a href="https://sensirion.com/media/documents/4EAF6AF8/61652C3C/Sensirion_CO2_Sensors_SCD30_Datasheet.pdf">datasheet</a>), sampling the sensor at its highest allowable frequency can lead to occasional measurement delays.</p>
-<p>During long term testing, there were 2 types of sensor read errors: a recoverable version and a less common hanging version. When <code>scd30_blocking_read_measurement_data</code> returns with an error, the first type skips over the entire measurement iteration and continues on the next cycle. However, the second type causes future read requests to hang, blocking the entire program sequence. To prevent system hangs, 2 levels of recovery were established to ensure autonomous function of the flux chamber.</p>
+<p>During long term testing, there were 2 types of sensor read errors: a recoverable version and a less common hanging version. When <code>scd30_blocking_read_measurement_data</code> returns with an error, the first type skips over the entire measurement iteration and automatically continues on the next cycle. However, the second type causes future read requests to hang, blocking the entire program sequence. To prevent system hangs, 2 levels of recovery were established to ensure autonomous function of the flux chamber.</p>
 <ol>
-<li><p><strong>Sensor Level Recovery</strong>: The first is using the npn transistor semiconductor switch to power cycle the sensor every time it encounters a read error, which is wrapped in a <code>recover_scd30</code> helper function. This function isolates the sensor and does not impact any of the other subsystems (eg. methane sensor) connected to the Pico. The sensor recovery procedure consists of toggling the GPIO controlling the transistor to switch off power to the sensor, then reinitializing it and continuing with recording data. However, due to the sensor warm-up period, invalid data immediately after powering up the CO₂ sensor may cause more data loss than necessary. <em>Future optimizations can differentiate between recoverable and hanging errors to limit the number of sensor power cycles.</em></p>
+<li><p><strong>Sensor Level Recovery</strong>: The first is using the NPN transistor semiconductor switch to power cycle the sensor every time it encounters a read error, which is wrapped in a <code>recover_scd30</code> helper function. This function isolates the sensor and does not impact any of the other subsystems (eg. methane sensor) connected to the Pico. The sensor recovery procedure consists of toggling the GPIO controlling the transistor to switch off power to the sensor, then reinitializing it and continuing with recording data. However, due to the sensor warm-up period, invalid data immediately after powering up the CO₂ sensor may cause more data loss than necessary.</p>
+<p><em>The current system power cycles the CO₂ sensor regardless of whether it is a recoverable or hanging error. Inspired by the second recovery method described below, future optimizations can differentiate between the two to limit the number of sensor power cycles to only hanging errors.</em></p>
 </li>
 <li><p><strong>System Level Recovery</strong>: The second is a system level power cycle using the RP2040's built in <code>watchdog</code> timer. If there is a hang for more than 8 seconds, the RP2040 will reset the whole system. The downside to this is that the script will restart from the beginning, returning to the original start time and airing out the chamber. To maintain time continuity, the time set to air out the chamber can be added to the last recorded time to connect data across a Pico power cycle.</p>
 </li>

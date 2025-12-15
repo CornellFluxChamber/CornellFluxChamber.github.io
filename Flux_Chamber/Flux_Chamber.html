@@ -7540,7 +7540,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Customizable-Parameters">Customizable Parameters<a class="anchor-link" href="#Customizable-Parameters">¶</a></h2><p>There is a <code>CUSTOMIZABLE PARAMETERS</code> section starting at line 274 that the user can change to accomodate their specific deployment environment:</p>
+<h2 id="Customizable-Parameters">Customizable Parameters<a class="anchor-link" href="#Customizable-Parameters">¶</a></h2><p>There is a <code>CUSTOMIZABLE PARAMETERS</code> section starting at line 270 that the user can change to accomodate their specific deployment environment:</p>
 <ul>
 <li><code>filename</code>: the name of the file to write to</li>
 <li><code>year, month, day, hour, min, sec</code>: the date and time for the data logging to start</li>
@@ -7698,8 +7698,8 @@ if (fr != FR_OK)
     while (true);
 }
 </code></pre>
-<p>Then the CO₂ sensor and its npn switch is intialized.</p>
-<pre><code>// Initialize KN3904 (npn) transistor for power
+<p>Then the CO₂ sensor and its NPN switch is intialized.</p>
+<pre><code>// Initialize KN3904 (NPN) transistor for power
 gpio_init(11);
 gpio_set_dir(11, GPIO_OUT);
 gpio_put(11, 1);        // turn on power to SCD30
@@ -7934,9 +7934,9 @@ else {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h4 id="Time-Drift">Time Drift<a class="anchor-link" href="#Time-Drift">¶</a></h4><p>Over long deployments, the start time of each cycle can drift due to compounding effects of fractional time loss from motor time variance, additional sensor recovery time, blocking sensor reads, etc. So strict timing was maintained to ensure periodic flushing of the chamber air. For the motor portion of the code, the time taken to move the motor was measured and subtracted from <code>flush_chamber_ms/2</code> to leave the remaining for low-power sleep.</p>
-<pre><code>if (elapsed_time_ms &lt; flush_chamber_ms/2) {
-    sleep_time_ms = flush_chamber_ms/2 - elapsed_time_ms;
+<h4 id="Time-Drift">Time Drift<a class="anchor-link" href="#Time-Drift">¶</a></h4><p>Over long deployments, the start time of each cycle can drift due to compounding effects of fractional time loss from motor time variance, additional sensor recovery time, blocking sensor reads, etc. So strict timing was maintained to ensure periodic flushing of the chamber air. For the motor portion of the code, the time taken to move the motor was measured, doubled (to account for the time to close the canopy at the end) and subtracted from <code>flush_chamber_ms</code>, leaving the remaining time for low-power sleep.</p>
+<pre><code>if (elapsed_time_ms &lt; flush_chamber_ms) {
+    sleep_time_ms = flush_chamber_ms - 2 * elapsed_time_ms;
     deep_sleep(sleep_time_ms, debug_mode);
 }
 </code></pre>

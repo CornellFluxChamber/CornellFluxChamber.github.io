@@ -7485,11 +7485,13 @@ a.anchor-link {
 <h1 id="Assembly-Instructions">Assembly Instructions<a class="anchor-link" href="#Assembly-Instructions">¶</a></h1><p><em>Written by Grace Lo</em></p>
 <blockquote>
 <ul>
-<li><a href="#Electronics-Assembly">Electronics</a><ul>
+<li><a href="#Electronics-Parts-List">Electronics Parts List</a></li>
+<li><a href="#Electronics-Instructions">Electronics Instructions</a><ul>
 <li><a href="#Flashing-the-Raspberry-Pi-Pico">Flashing the Raspberry Pi Pico</a></li>
 </ul>
 </li>
-<li><a href="#Chamber-Assembly">Chamber</a></li>
+<li><a href="#Chamber-Parts-List">Chamber Parts List</a></li>
+<li><a href="#Chamber-AsseInstructionsmbly">Chamber Instructions</a></li>
 </ul>
 </blockquote>
 </div>
@@ -7561,7 +7563,7 @@ a.anchor-link {
 <td></td>
 <td>1</td>
 <td>26.99</td>
-<td>Or equivalent with total length (motor body + lead screw) of ~31 cm.</td>
+<td>Adjust total length (motor body + lead screw) accordingly for a taller/shorter chamber; this one is ~31 cm. <br/>The motor body's top face should still follow these dimensions (<em>for compatibility with limit switch PCB</em>): <br/> <img alt="Motor Face" src="img/electronic/motor_face.png" width="150"/></td>
 </tr>
 <tr>
 <td><a href="https://www.digikey.com/en/products/detail/omron-electronics-inc-emc-div/SS-5GL-3D/5236961">Limit Switch</a></td>
@@ -7582,7 +7584,7 @@ a.anchor-link {
 <td></td>
 <td>1</td>
 <td>1.20</td>
-<td>Minimum of 5 per order.</td>
+<td>The design files can be found in the <a href="https://github.com/CornellFluxChamber/ChamberCode/tree/master/CornellFluxChamber/PCB">CornellFluxChamber</a> Github repository. <br/>The PCBs can be ordered from <a href="https://cart.jlcpcb.com/quote?spm=Jlcpcb.Homepage.1006">JLCPCB</a> by uploading the two <em>.zip</em> files and keeping the default settings.</td>
 </tr>
 <tr>
 <td><a href="https://www.digikey.com/en/products/detail/on-shore-technology-inc/OSTVN02A150/1588862">2-Hole Screw Terminal 2.54mm Pitch</a></td>
@@ -7687,29 +7689,35 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Electronics-Assembly">Electronics Assembly<a class="anchor-link" href="#Electronics-Assembly">¶</a></h2><p>The electronic system uses header pins to create a modular design, where components can be easily replaced in case of failure.</p>
+<h2 id="Electronics-Instructions">Electronics Instructions<a class="anchor-link" href="#Electronics-Instructions">¶</a></h2><p>The electronic system uses header pins to create a modular design, where components can be easily replaced in case of failure.</p>
 <ol>
 <li><p>Solder.</p>
 <ul>
 <li><p>Male header pins (included in package) for the breakout boards (CO₂ sensor, microSD card breakout board, motor driver).</p>
-<img alt="Step 1a" src="img/electronic_assembly/step1a.png" width="250"/>
+<img alt="Step 1a" src="img/electronic/step1a.png" width="250"/>
 </li>
 <li><p>Header pins and other parts (screw terminals, 1kΩ resistor, NPN transistor, limit switch) for the PCBs.</p>
-<img alt="Step 1b" src="img/electronic_assembly/step1b.png" width="300"/>
+<img alt="Step 1b" src="img/electronic/step1b.png" width="300"/>
 </li>
-<li><p>Use diagonal cutters to trim the ends of the limit switch and screw terminals to be relatively flush with the PCB (in particular, the limit switch PCB should lay flat on the motor - see step 6 of <a href="#Chamber-Assembly">Chamber Assembly</a>).</p>
+<li><p>Use diagonal cutters to trim the ends of the limit switch and screw terminals to be relatively flush with the PCB (in particular, the limit switch PCB should lay flat on the motor - see step 6 of <a href="#Chamber-Instructions">Chamber Instructions</a>).</p>
 </li>
 </ul>
 </li>
 <li><p>Cut excess motor cable (leave ~3-in) and strip the motor cable to access the 4 wires. For longevity, it is suggested to solder each of the multi-threaded wires.</p>
-<img alt="Step 2" src="img/electronic_assembly/step2.png" width="300"/>
+<img alt="Step 2" src="img/electronic/step2.png" width="300"/>
+</li>
+<li><p>Screw the motor cable and the barrel jack to wire leads adapter to the screw terminal of the motor driver.</p>
+<ul>
+<li>The motor cable wires just need to remain aligned - starting from input 1B, we chose to order blue-red-green-black, although the reverse would work as well.</li>
+<li>For the wire leads, black/white corresponds to ground/⊖ and red corresponds to power/⊕.</li>
+</ul>
 </li>
 <li><p>Plug in sensors according to the picture.</p>
 <ul>
 <li><p>The screw terminal wires should be left out to connect later in the assembly process.</p>
 </li>
 <li><p>There are also detailed wiring diagrams in the <strong>Electrical design</strong> section of the <a href="../index.html">main webpage</a>.</p>
-<img alt="Step 3" src="img/electronic_assembly/step3.png" width="400"/>
+<img alt="Step 4" src="img/electronic/step4.png" width="400"/>
 </li>
 </ul>
 </li>
@@ -7726,7 +7734,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h3 id="Flashing-the-Raspberry-Pi-Pico">Flashing the Raspberry Pi Pico<a class="anchor-link" href="#Flashing-the-Raspberry-Pi-Pico">¶</a></h3><p>The code must be loaded onto the Pico every time there is a change.</p>
+<h3 id="Flashing-the-Raspberry-Pi-Pico">Flashing the Raspberry Pi Pico<a class="anchor-link" href="#Flashing-the-Raspberry-Pi-Pico">¶</a></h3><p>The code must be flashed/loaded onto the Pico every time there is an update.</p>
 <ol>
 <li><p>On your laptop's command-line interface (Terminal for macOS/Linux or PowerShell for Windows):</p>
 <ul>
@@ -7762,7 +7770,7 @@ a.anchor-link {
 </li>
 </ul>
 </li>
-<li><p>Hold down the Bootsel button and plug the USB cable into your laptop. Then click the "Run" icon at the bottom of the screen to flash the Pico.</p>
+<li><p>Hold down the Bootsel button on the Pico and plug the USB cable into your laptop to enter BOOTSEL mode. Then click the "Run" icon at the bottom of the screen to flash the Pico.</p>
 </li>
 </ol>
 <p>There are 2 ways to verify correct setup:</p>
@@ -7786,6 +7794,17 @@ a.anchor-link {
 <div style="text-align:center;">
 <img alt="Visual Studio Code Window" src="img/vscode_window.png" width="800"/>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<hr/>
 </div>
 </div>
 </div>
@@ -7928,17 +7947,10 @@ a.anchor-link {
 <td>Nut size to fit chosen screw.</td>
 </tr>
 <tr>
-<td><a href="https://voltaicsystems.com/v88/?srsltid=AfmBOoo9PaF4oLNwP4vonrxR4gKMhDIm0SLCi3NDAY8eFSJ0FpnUzNSK">Portable Battery</a> (<em>not included in total price</em>)</td>
-<td></td>
-<td>1</td>
-<td>149.00</td>
-<td></td>
-</tr>
-<tr>
 <td><a href="https://www.amazon.com/Art3d-Sticky-Double-Sided-Command-Adhesive/dp/B0C4L1L696">1-in x 3-in Velcro</a></td>
 <td></td>
 <td>1</td>
-<td>0.58</td>
+<td>0.29</td>
 <td></td>
 </tr>
 <tr>
@@ -7956,10 +7968,24 @@ a.anchor-link {
 <td></td>
 </tr>
 <tr>
+<td><a href="https://www.adafruit.com/product/2778">USB to 2.1mm DC Booster Cable - 12V Output</a></td>
+<td></td>
+<td>1</td>
+<td>6.50</td>
+<td></td>
+</tr>
+<tr>
+<td>Portable Charger (<em>not included in total price</em>)</td>
+<td></td>
+<td>1</td>
+<td>~20.00</td>
+<td></td>
+</tr>
+<tr>
 <td><strong>Total</strong></td>
 <td></td>
 <td></td>
-<td><strong>64.59</strong></td>
+<td><strong>73.78</strong></td>
 <td></td>
 </tr>
 </tbody>
@@ -7980,7 +8006,7 @@ a.anchor-link {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Chamber-Assembly">Chamber Assembly<a class="anchor-link" href="#Chamber-Assembly">¶</a></h2><ol>
+<h2 id="Chamber-Instructions">Chamber Instructions<a class="anchor-link" href="#Chamber-Instructions">¶</a></h2><ol>
 <li><p>Laser cut the acrylic top and support with templates provided in the <a href="https://github.com/CornellFluxChamber/ChamberCode/tree/master/CornellFluxChamber/LaserCutTemplates">CornellFluxChamber</a> Github repository.</p>
 <ul>
 <li>If you do not have access to a laser cutter, drill holes for the acrylic top and replace the acrylic support with <a href="https://www.homedepot.com/p/TUFFLENS-24-in-x-48-in-x-060-in-Clear-Polycarbonate-Lighting-Panel-17349102/310566151">flexible lighting panel</a>, which is easier to cut with heavy duty scissors/craft knife.</li>
@@ -7990,7 +8016,7 @@ a.anchor-link {
 <ul>
 <li><em>Don't make the same mistake I did, double check your orientation or else the PCBs will not fit properly!</em></li>
 </ul>
-<img alt="Step 2" src="img/chamber_assembly/step2.png" width="400"/>
+<img alt="Step 2" src="img/chamber/step2.png" width="400"/>
 </li>
 <li><p>Build the structure.</p>
 <ul>
@@ -8002,14 +8028,14 @@ a.anchor-link {
 <ul>
 <li><em>Tip: Squeeze the loop clamps to align its holes before threading the screw.</em></li>
 </ul>
-<p><img alt="Step 4a" src="img/chamber_assembly/step4a.png" width="300"/><img alt="Step 4b" src="img/chamber_assembly/step4b.png" width="300"/></p>
+<p><img alt="Step 4a" src="img/chamber/step4a.png" width="300"/><img alt="Step 4b" src="img/chamber/step4b.png" width="300"/></p>
 </li>
 <li><p>Attach the motor nut (included with the motor) and the float switch.</p>
 <ul>
 <li><p>Thread the long end of the motor nut through the center of the acrylic support and attach it using 4 M3 x 10-mm screws.</p>
 </li>
 <li><p>Connect the float switch with the float facing up.</p>
-<p><img alt="Step 5a" src="img/chamber_assembly/step5a.png" width="210"/><img alt="Step 5b" src="img/chamber_assembly/step5b.png" width="280"/></p>
+<p><img alt="Step 5a" src="img/chamber/step5a.png" width="210"/><img alt="Step 5b" src="img/chamber/step5b.png" width="280"/></p>
 </li>
 </ul>
 </li>
@@ -8031,21 +8057,21 @@ a.anchor-link {
 <li>The PCB should be oriented such that the Raspberry Pi Pico power port faces outward and the motor driver is closer to the cable through-hole side of the acrylic.</li>
 </ul>
 </li>
-<li><p>Connect the limit switch wires between the PCBs and the motor cable between the motor and the main PCB.</p>
-<p><img alt="Step 6a" src="img/chamber_assembly/step6a.png" width="301"/><img alt="Step 6b" src="img/chamber_assembly/step6b.png" width="400"/></p>
+<li><p>Connect the limit switch wires between the PCBs, the 4-wire motor cable between the motor and the main PCB, and the wire lead adapter to the motor booster cable.</p>
+<p><img alt="Step 6a" src="img/chamber/step6a.png" width="301"/><img alt="Step 6b" src="img/chamber/step6b.png" width="400"/></p>
 </li>
 </ol>
 </li>
-<li><p>Pull the motor and Pico power cables through the cable through-hole toward the side of the acrylic, then caulk the hole to seal it shut.</p>
+<li><p>Pull the motor booster cable and Pico power cable through the cable through-hole toward the side of the acrylic, then caulk the hole to seal it shut.</p>
 </li>
 <li><p>Thread the acrylic support piece onto the motor rod, with the float of the float switch facing outward. Rotate the support piece until it is at the desired maximum height (when the canopy is fully open, the float switch should touch the surface of the water to indicate the end point).</p>
 <ul>
 <li>Now is the time to screw the float switch wires into the main PCB.</li>
 </ul>
-<p><img alt="Step 8a" src="img/chamber_assembly/step8a.png" width="300"/><img alt="Step 8b" src="img/chamber_assembly/step8b.png" width="300"/></p>
+<p><img alt="Step 8a" src="img/chamber/step8a.png" width="300"/><img alt="Step 8b" src="img/chamber/step8b.png" width="300"/></p>
 </li>
 <li><p>Fully extend the duct and use binder clips to secure it to the acrylic support.</p>
-<img alt="Step 9" src="img/chamber_assembly/step9.png" width="300"/>
+<img alt="Step 9" src="img/chamber/step9.png" width="300"/>
 </li>
 <li><p>Finishing touches.</p>
 <ul>
@@ -8056,7 +8082,7 @@ a.anchor-link {
 <li><p>Place the tarp over the chamber such that rain water can fall off the edges, securing each corner to the structure using and duct tape.</p>
 </li>
 <li><p>For extra buoyancy, thread pool noodles on the last 4 1-ft pipes and connect these support legs to the 4-way elbows of the chamber structure.</p>
-<img alt="Step 10" src="img/chamber_assembly/step10.png" width="400"/>
+<img alt="Step 10" src="img/chamber/step10.png" width="400"/>
 </li>
 </ul>
 </li>
